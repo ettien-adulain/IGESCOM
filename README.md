@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # WinTech ERP V2.5 - GIA Edition
 
 Plateforme de gestion intégrée (ATIC, Ventes, Logistique, RH) pour YAOCOM'S GROUPE.
@@ -20,3 +21,8 @@ Le journal de sécurité est disponible dans `storage/logs/security.log`.
 
 ---
 © 2026 YAOCOM'S GROUPE - Système Certifié.
+=======
+# IGESCOM
+LOGICIEL DE GESTION 
+>>>>>>> a6d024fad1aca0561ce5e9b2fbd9d66d4458f4d8
+    
