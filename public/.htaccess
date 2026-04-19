@@ -1,0 +1,42 @@
+# ----------------------------------------------------------------------
+# WINTECH ERP - SECURITE & PERFORMANCE APACHE
+# ----------------------------------------------------------------------
+
+# 1. Empecher le listage des repertoires
+Options -Indexes
+
+# 2. Encodage par defaut
+AddDefaultCharset UTF-8
+
+# 3. Activation de la reecriture d'URL
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Fixer la base si necessaire (ex: /wintech_erp/public/)
+    # RewriteBase /
+
+    # Ne pas appliquer la reecriture aux fichiers reels (images, css, js)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Envoyer tout le reste vers index.php
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+# 4. Compression GZIP pour la vitesse
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# 5. Protection contre l'acces aux fichiers sensibles
+<FilesMatch "^(?:\.env|composer\.json|config\.php)$">
+    # Apache 2.4+
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    # Apache 2.2 (compat)
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

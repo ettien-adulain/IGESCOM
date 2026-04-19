@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinTech ERP V2.5 - Édition GIA | YAOCOM'S GROUPE</title>
+    <!-- BIBLIOTHÈQUE PDF AJOUTÉE -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #d32f2f; /* YCS Red */
+            --primary-dark: #b71c1c;
+            --secondary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #c0392b;
+            --light: #f8f9fa;
+            --dark: #1a1a1a;
+            --gray: #95a5a6;
+            --border: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 8px;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: var(--font-main); background-color: #f0f2f5; color: var(--secondary); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* --- UTILITIES --- */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .text-sm { font-size: 0.85rem; }
+        .text-xs { font-size: 0.75rem; }
+        .font-bold { font-weight: 700; }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .bg-white { background: white; }
+        .p-4 { padding: 1rem; }
+        .rounded { border-radius: var(--radius); }
+        .shadow { box-shadow: var(--shadow); }
+
+        /* --- SIDEBAR --- */
+        aside { width: 260px; background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; transition: transform 0.3s ease; }
+        .brand { height: 70px; display: flex; align-items: center; padding: 0 1.5rem; border-bottom: 1px solid var(--border); }
+        .brand img { height: 40px; margin-right: 10px; }
+        .brand span { font-size: 1.2rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; }
+        .nav-menu { flex: 1; padding: 1rem 0; overflow-y: auto; }
+        .nav-item { padding: 0.8rem 1.5rem; display: flex; align-items: center; color: var(--secondary); cursor: pointer; transition: all 0.2s; text-decoration: none; font-weight: 500; }
+        .nav-item:hover { background-color: #fff5f5; color: var(--primary); }
+        .nav-item.active { background-color: #ffebee; color: var(--primary); border-right: 3px solid var(--primary); }
+        .nav-item i { width: 24px; margin-right: 10px; text-align: center; }
+        
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        header { height: 70px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+        .content-area { flex: 1; overflow-y: auto; padding: 2rem; position: relative; }
+        
+        /* --- COMPONENTS: BUTTONS --- */
+        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: white; border: 1px solid var(--border); color: var(--secondary); }
+        .btn-secondary:hover { background: var(--light); }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        /* --- COMPONENTS: CARDS & WIDGETS --- */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: white; border-radius: var(--radius); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; }
+        .stat-card h3 { font-size: 0.9rem; color: var(--gray); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--secondary); }
+        .stat-card .trend { font-size: 0.85rem; margin-top: 0.5rem; }
+        
+        /* --- TICKER --- */
+        .ticker-wrap { width: 100%; overflow: hidden; background-color: var(--secondary); color: white; padding: 8px 0; margin-bottom: 1rem; border-radius: 4px; }
+        .ticker { display: inline-block; white-space: nowrap; padding-right: 100%; animation: ticker 30s linear infinite; }
+        .ticker-item { display: inline-block; padding: 0 2rem; font-size: 0.9rem; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* --- TABLES --- */
+        .table-container { overflow-x: auto; background: white; border-radius: var(--radius); border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background-color: #f8f9fa; font-weight: 600; color: var(--gray); font-size: 0.85rem; text-transform: uppercase; }
+        tr:hover { background-color: #fcfcfc; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-certified { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+        
+        /* --- FORMS --- */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.7rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem; transition: 0.2s; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.1); }
+        
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal { background: white; width: 100%; max-width: 600px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.1); transform: translateY(20px); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { padding: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 1rem; background: #f8f9fa; }
+        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray); }
+
+        /* --- TOAST --- */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: white; padding: 1rem; border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; min-width: 300px; border-left: 4px solid var(--primary); transform: translateX(120%); transition: 0.3s ease; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        
+        /* --- GIA ASSISTANT --- */
+        .gia-widget { position: fixed; bottom: 30px; right: 30px; z-index: 150; }
+        .gia-btn { width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s; font-size: 1.5rem; }
+        .gia-btn:hover { transform: scale(1.1); }
+        .gia-chat { position: absolute; bottom: 80px; right: 0; width: 350px; height: 450px; background: white; border-radius: var(--radius); box-shadow: 0 5px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transform: scale(0); opacity: 0; transition: 0.3s; border: 1px solid var(--border); }
+        .gia-chat.active { transform: scale(1); opacity: 1; }
+        .gia-header { background: var(--primary); color: white; padding: 1rem; display: flex; align-items: center; gap: 10px; }
+        .gia-header img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
+        .gia-body { flex: 1; padding: 1rem; overflow-y: auto; background: #f8f9fa; display: flex; flex-direction: column; gap: 10px; }
+        .gia-footer { padding: 0.8rem; background: white; border-top: 1px solid var(--border); display: flex; gap: 5px; }
+        .msg { padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; }
+        .msg.bot { background: #e9ecef; color: var(--secondary); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        /* --- DGI SPECIFIC --- */
+        .dgi-status-box { border: 1px dashed var(--primary); padding: 1rem; border-radius: var(--radius); background: #fff5f5; margin-top: 1rem; }
+        .qr-placeholder { width: 120px; height: 120px; background: white; border: 1px solid var(--border); margin-top: 10px; display: flex; align-items: center; justify-content: center; }
+
+        /* --- MODAL PDF PREVIEW (Large) --- */
+        .modal-lg { max-width: 900px; }
+        
+        /* --- PDF TEMPLATE STYLES (Inside the Modal) --- */
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+            background: white;
+        }
+        .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
+        .invoice-box table td { padding: 5px; vertical-align: top; }
+        .invoice-box table tr td:nth-child(2) { text-align: right; }
+        .invoice-box table tr.top table td { padding-bottom: 20px; }
+        .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; font-weight: bold; }
+        .invoice-box table tr.item td{ border-bottom: 1px solid #eee; }
+        .invoice-box table tr.total td:nth-child(2) { border-top: 2px solid #eee; font-weight: bold; }
+        .dgi-footer {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid var(--primary);
+            background: #fff5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .draft-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(0,0,0,0.05);
+            font-weight: bold;
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            aside { position: absolute; height: 100%; transform: translateX(-100%); }
+            aside.open { transform: translateX(0); }
+            header { padding: 0 1rem; }
+            .content-area { padding: 1rem; }
+        }
+    </style>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+        <div class="brand">
+            <img src="https://z-cdn-media.chatglm.cn/files/4516ad78-e574-4427-9ab5-d55d44657d8d.png" alt="Logo YCS">
+            <span>WinTech V2.5</span>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" onclick="router('dashboard')">
+                <i class="fas fa-chart-line"></i> Tableau de Bord
+            </a>
+            <a href="#" class="nav-item" onclick="router('crm')">
+                <i class="fas fa-users"></i> CRM / Clients
+            </a>
+            <a href="#" class="nav-item" onclick="router('factures')">
+                <i class="fas fa-file-invoice-dollar"></i> Facturation
+            </a>
+            <a href="#" class="nav-item" onclick="router('stock')">
+                <i class="fas fa-boxes"></i> Stock & Picking
+            </a>
+            <a href="#" class="nav-item" onclick="router('dgi')">
+                <i class="fas fa-shield-alt"></i> Conformité DGI
+            </a>
+            <a href="#" class="nav-item" onclick="router('settings')">
+                <i class="fas fa-cogs"></i> Paramètres
+            </a>
+        </nav>
+        <div style="padding: 1.5rem; border-top: 1px solid var(--border);" title="Utilisateur">
+            <div class="flex items-center gap-2">
+                <img src="https://z-cdn-media.chatglm.cn/files/fa5b4248-cfac-471d-9202-cb589adfcecc.jpg" alt="User" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" title="Utilisateur">
+                <div>
+                    <div class="font-bold text-sm">Admin YCS</div>
+                    <div class="text-xs text-gray">Comptable</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <header>
+            <button class="btn btn-secondary" id="menu-toggle" style="margin-right: 1rem; display: none;" title="Ouvrir/Fermer le menu"><i class="fas fa-bars"></i></button>
+            <h2 id="page-title" class="font-bold">Tableau de Bord</h2>
+            <div class="flex items-center gap-4">
+                <button class="btn btn-sm btn-secondary" title="Notifications"><i class="fas fa-bell"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+            </div>
+        </header>
+
+        <div class="content-area" id="main-view">
+            <!-- DYNAMIC CONTENT LOADED HERE -->
+        </div>
+    </main>
+
+    <!-- MODAL FACTURE -->
+    <div class="modal-overlay" id="factureModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nouvelle Facture</h3>
+                <button class="close-modal" onclick="closeModal('factureModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-facture">
+                    <div class="grid-4" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Client</label>
+                            <select class="form-control" id="f-client" required title="Sélectionner un client">
+                                <option value="">Sélectionner un client...</option>
+                                <option value="SICOGI">SICOGI SA</option>
+                                <option value="SODECI">SODECI</option>
+                                <option value="PETROCI">PETROCI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Émission</label>
+                            <input type="date" class="form-control" id="f-date" required title="Sélectionner la date d'émission">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" id="f-desc" rows="2" placeholder="Prestation informatique..."></textarea>
+                    </div>
+                    <div class="grid-4" style="grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Montant HT (XOF)</label>
+                            <input type="number" class="form-control" id="f-ht" oninput="calculateTotal()" required title="Entrer le montant HT">
+                        </div>
+                        <div class="form-group">
+                            <label>TVA (%)</label>
+                            <input type="number" class="form-control" id="f-tva" value="18" oninput="calculateTotal()" readonly title="TVA calculée automatiquement">
+                        </div>
+                        <div class="form-group">
+                            <label>Total TTC</label>
+                            <input type="text" class="form-control" id="f-ttc" readonly style="background: #f0f2f5; font-weight: bold;" title="Total TTC calculé automatiquement">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('factureModal')" title="Fermer le modal">Annuler</button>
+                <button class="btn btn-primary" onclick="submitFacture()">
+                    <i class="fas fa-save"></i> Créer & Certifier DGI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PREVIEW PDF -->
+    <div class="modal-overlay" id="pdfModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>Aperçu Facture</h3>
+                <div class="flex gap-2">
+                    <button class="btn btn-sm btn-primary" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> Télécharger PDF</button>
+                    <button class="close-modal" onclick="closeModal('pdfModal')">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body" style="background: #525659; overflow-x: auto;">
+                <!-- CONTENU PDF INJECTÉ ICI -->
+                <div id="pdf-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIA ASSISTANT -->
+    <div class="gia-widget">
+        <div class="gia-chat" id="gia-chat">
+            <div class="gia-header">
+                <img src="https://z-cdn-media.chatglm.cn/files/fa5b4248-cfac-471d-9202-cb589adfcecc.jpg" alt="GIA">
+                <div>
+                    <div class="font-bold">Assistant GIA</div>
+                    <div class="text-xs" style="opacity: 0.8;">IA Contextuelle WinTech</div>
+                </div>
+                <button onclick="toggleGia()" style="margin-left: auto; background: none; border: none; color: white;" title="Fermer l'assistant"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="gia-body" id="gia-messages">
+                <div class="msg bot">Bonjour ! Je suis l'Assistant GIA. Je peux vous aider avec la facturation, la conformité DGI ou l'analyse de vos données. Comment puis-je vous aider ?</div>
+            </div>
+            <div class="gia-footer">
+                <input type="text" class="form-control" id="gia-input" placeholder="Écrivez votre message..." onkeypress="handleGiaInput(event)">
+                <button class="btn btn-primary btn-sm" onclick="sendGiaMessage()" title="Envoyer le message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <div class="gia-btn" onclick="toggleGia()">
+            <i class="fas fa-robot"></i>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        /* --- STATE MANAGEMENT (SIMULATED DATABASE) --- */
+        const store = {
+            config: {
+                ifu: '1300045678901',
+                rccm: 'CI-ABJ-2023-B-12345',
+                api_key: 'sk_test_dgi_9384759283745928',
+                mode: 'TEST', // TEST or PROD
+                adresse: 'Boulevard de la République, Abidjan'
+            },
+            factures: [
+                { id: 101, ref: 'FAC-2023-001', client: 'SICOGI SA', date: '2023-10-15', ht: 500000, ttc: 590000, status: 'certifiee', dgi_id: 'DGI-8839201', qr: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=DGI-8839201', desc: 'Maintenance Serveur' },
+                { id: 102, ref: 'FAC-2023-002', client: 'SODECI', date: '2023-10-18', ht: 1200000, ttc: 1416000, status: 'en_attente', dgi_id: null, qr: null, desc: 'Licences Logicielles' },
+                { id: 103, ref: 'FAC-2023-003', client: 'PETROCI', date: '2023-10-20', ht: 350000, ttc: 413000, status: 'rejetee', dgi_id: null, qr: null, reason: 'IFU Client invalide', desc: 'Audit Sécurité' }
+            ],
+            logs: [
+                { date: '2023-10-20 14:30', type: 'INFO', msg: 'Synchronisation automatique réussie' },
+                { date: '2023-10-20 10:15', type: 'ERROR', msg: 'Échec connexion API DGI (Timeout)' },
+                { date: '2023-10-19 16:45', type: 'SUCCESS', msg: 'Facture FAC-2023-001 certifiée' }
+            ]
+        };
+
+        /* --- ROUTER --- */
+        function router(view) {
+            const main = document.getElementById('main-view');
+            const title = document.getElementById('page-title');
+            
+            // Update Sidebar Active State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const activeLink = document.querySelector(`.nav-item[onclick="router('${view}')"]`);
+            if(activeLink) activeLink.classList.add('active');
+
+            // Render Views
+            switch(view) {
+                case 'dashboard':
+                    title.innerText = 'Tableau de Bord';
+                    renderDashboard(main);
+                    break;
+                case 'factures':
+                    title.innerText = 'Facturation & Certification';
+                    renderFactures(main);
+                    break;
+                case 'dgi':
+                    title.innerText = 'Conformité DGI / FNE';
+                    renderDGI(main);
+                    break;
+                case 'crm':
+                    title.innerText = 'Gestion Clients';
+                    main.innerHTML = `<div class="card"><h3 class="p-4">Module CRM</h3><p class="p-4">Gestion des prospects et clients YAOCOM'S.</p></div>`;
+                    break;
+                default:
+                    main.innerHTML = `<div class="card"><h3 class="p-4">Module en construction</h3></div>`;
+            }
+        }
+
+        /* --- VIEW: DASHBOARD --- */
+        function renderDashboard(container) {
+            const totalCa = store.factures.reduce((acc, curr) => acc + curr.ttc, 0);
+            const pending = store.factures.filter(f => f.status === 'en_attente').length;
+            const certified = store.factures.filter(f => f.status === 'certifiee').length;
+
+            container.innerHTML = `
+                <div class="ticker-wrap">
+                    <div class="ticker">
+                        <div class="ticker-item"><i class="fas fa-info-circle"></i> Mise à jour Critique API DGI : Maintenance prévue ce dimanche à 02h00.</div>
+                        <div class="ticker-item"><i class="fas fa-check-circle"></i> Facture FAC-2023-001 certifiée avec succès par la Direction Générale des Impôts.</div>
+                        <div class="ticker-item"><i class="fas fa-exclamation-triangle"></i> Alerte Stock : Article REF-0052 en rupture de stock.</div>
+                    </div>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card stat-card">
+                        <h3>Chiffre d'Affaires</h3>
+                        <div class="value text-primary">${formatCurrency(totalCa)}</div>
+                        <div class="trend text-success"><i class="fas fa-arrow-up"></i> +12% ce mois</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3>Factures Certifiées</h3>
+                        <div class="value">${certified}</div>
+                        <div class="trend text-gray">Conformité fiscale OK</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3>En attente DGI</h3>
+                        <div class="value text-warning">${pending}</div>
+                        <div class="trend text-gray">Action requise</div>
+                    </div>
+                    <div class="card stat-card">
+                        <h3>Clients Actifs</h3>
+                        <div class="value">142</div>
+                        <div class="trend text-success"><i class="fas fa-user-plus"></i> +3 nouveaux</div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 flex-col lg:flex-row">
+                    <div class="card" style="flex: 2;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3>Performance Mensuelle (2023)</h3>
+                        </div>
+                        <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                            <div style="width: 8%; height: 40%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Janvier"></div>
+                            <div style="width: 8%; height: 55%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Février"></div>
+                            <div style="width: 8%; height: 45%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Mars"></div>
+                            <div style="width: 8%; height: 70%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Avril"></div>
+                            <div style="width: 8%; height: 60%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Mai"></div>
+                            <div style="width: 8%; height: 80%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Juin"></div>
+                            <div style="width: 8%; height: 75%; background: #e0e0e0; border-radius: 4px 4px 0 0;" title="Juillet"></div>
+                            <div style="width: 8%; height: 90%; background: var(--primary); border-radius: 4px 4px 0 0;" title="Août (Actuel)"></div>
+                        </div>
+                    </div>
+                    <div class="card" style="flex: 1;">
+                        <h3>Journal Système</h3>
+                        <ul style="list-style: none; margin-top: 1rem;">
+                            ${store.logs.map(log => `
+                                <li style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem;">
+                                    <span class="text-xs text-gray">${log.date}</span> 
+                                    <span class="font-bold ${log.type === 'ERROR' ? 'text-danger' : log.type === 'SUCCESS' ? 'text-success' : 'text-primary'}">[${log.type}]</span>
+                                    ${log.msg}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* --- VIEW: FACTURES --- */
+        function renderFactures(container) {
+            let rows = store.factures.map(f => `
+                <tr>
+                    <td>${f.ref}</td>
+                    <td>${f.client}</td>
+                    <td>${f.date}</td>
+                    <td class="font-bold">${formatCurrency(f.ttc)}</td>
+                    <td>
+                        ${getStatusBadge(f.status)}
+                    </td>
+                    <td>
+                        <!-- Bouton PDF ajouté ici -->
+                        <button class="btn btn-sm btn-secondary" onclick="openPDFPreview(${f.id})" title="Voir PDF"><i class="fas fa-file-pdf"></i></button>
+                        ${f.status === 'certifiee' ? `<button class="btn btn-sm btn-secondary" onclick="showQR('${f.qr}', '${f.ref}')"><i class="fas fa-qrcode"></i></button>` : ''}
+                        ${f.status === 'en_attente' ? `<button class="btn btn-sm btn-primary" onclick="certifyFacture(${f.id})"><i class="fas fa-shield-alt"></i></button>` : ''}
+                        ${f.status === 'rejetee' ? `<button class="btn btn-sm btn-danger" onclick="alert('Correction requise: ${f.reason}')"><i class="fas fa-exclamation-triangle"></i></button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex gap-2">
+                        <input type="text" class="form-control" placeholder="Rechercher une facture..." style="width: 300px;">
+                        <button class="btn btn-secondary"><i class="fas fa-filter"></i></button>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('factureModal')"><i class="fas fa-plus"></i> Nouvelle Facture</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Référence</th>
+                                <th>Client</th>
+                                <th>Date</th>
+                                <th>Montant TTC</th>
+                                <th>Statut DGI</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        /* --- VIEW: DGI CONFIG --- */
+        function renderDGI(container) {
+            container.innerHTML = `
+                <div class="card" style="max-width: 800px; margin: 0 auto;">
+                    <div style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h3 class="text-primary"><i class="fas fa-cogs"></i> Configuration API DGI / FNE</h3>
+                        <p class="text-gray text-sm">Paramétrage de la connexion sécurisée vers les serveurs de la Direction Générale des Impôts.</p>
+                    </div>
+                    
+                    <form onsubmit="event.preventDefault(); saveDGIConfig();">
+                        <div class="grid-4" style="grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>URL de l'API (Endpoint)</label>
+                                <input type="text" class="form-control" value="https://api.dgi.ci/fne/v1" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Clé API (Secret)</label>
+                                <input type="password" class="form-control" value="${store.config.api_key}">
+                            </div>
+                        </div>
+
+                        <div class="grid-4" style="grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 0;">
+                            <div class="form-group">
+                                <label>IFU Entreprise (13 chiffres)</label>
+                                <input type="text" class="form-control" value="${store.config.ifu}" pattern="[0-9]{13}">
+                            </div>
+                            <div class="form-group">
+                                <label>Mode Opération</label>
+                                <select class="form-control">
+                                    <option value="TEST" selected>Mode TEST (Sandbox)</option>
+                                    <option value="PROD">Mode PRODUCTION</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="dgi-status-box">
+                            <h4 class="text-sm font-bold mb-2"><i class="fas fa-link"></i> État de la connexion</h4>
+                            <div class="flex items-center gap-2">
+                                <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%;"></div>
+                                <span class="text-sm">Connecté et sécurisé (TLS 1.3)</span>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="testDGIConnexion()">Tester Ping</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem; text-align: right;">
+                            <button type="submit" class="btn btn-primary">Enregistrer la configuration</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        /* --- ACTIONS & LOGIC --- */
+
+        // Helper: Format Currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(amount);
+        }
+
+        // Helper: Status Badge
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'certifiee': return '<span class="badge badge-certified"><i class="fas fa-check"></i> Certifiée</span>';
+                case 'en_attente': return '<span class="badge badge-pending"><i class="fas fa-clock"></i> En attente</span>';
+                case 'rejetee': return '<span class="badge badge-rejected"><i class="fas fa-times"></i> Rejetée</span>';
+                default: return '<span class="badge">Inconnu</span>';
+            }
+        }
+
+        // Modal Logic
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            if(id === 'factureModal') document.getElementById('f-date').valueAsDate = new Date();
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Facture Creation Logic
+        function calculateTotal() {
+            const ht = parseFloat(document.getElementById('f-ht').value) || 0;
+            const tva = ht * 0.18;
+            const ttc = ht + tva;
+            document.getElementById('f-ttc').value = formatCurrency(ttc).replace('XOF', '').trim();
+        }
+
+        function submitFacture() {
+            const client = document.getElementById('f-client').value;
+            const ht = parseFloat(document.getElementById('f-ht').value);
+            const date = document.getElementById('f-date').value;
+            const desc = document.getElementById('f-desc').value || 'Prestation de service';
+
+            if(!client || !ht || !date) {
+                showToast('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+
+            const ttc = ht * 1.18;
+            const newFacture = {
+                id: store.factures.length + 101,
+                ref: `FAC-2023-00${store.factures.length + 4}`,
+                client: client,
+                date: date,
+                ht: ht,
+                ttc: ttc,
+                status: 'en_attente',
+                dgi_id: null,
+                qr: null,
+                desc: desc
+            };
+
+            store.factures.unshift(newFacture);
+            closeModal('factureModal');
+            renderFactures(document.getElementById('main-view'));
+            showToast('Facture créée avec succès ! En attente de certification.', 'success');
+            
+            setTimeout(() => {
+                certifyFacture(newFacture.id);
+            }, 1000);
+        }
+
+        // DGI API SIMULATION
+        async function certifyFacture(id) {
+            const facture = store.factures.find(f => f.id === id);
+            if(!facture) return;
+
+            showToast('Connexion à l\'API DGI...', 'info');
+
+            await new Promise(r => setTimeout(r, 2000));
+
+            const isSuccess = Math.random() > 0.2;
+
+            if(isSuccess) {
+                facture.status = 'certifiee';
+                facture.dgi_id = `DGI-${Math.floor(Math.random() * 1000000)}`;
+                facture.qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${facture.dgi_id}`;
+                
+                store.logs.unshift({
+                    date: new Date().toLocaleString('fr-FR'),
+                    type: 'SUCCESS',
+                    msg: `Facture ${facture.ref} certifiée (${facture.dgi_id})`
+                });
+
+                showToast(`Succès ! Facture certifiée : ${facture.dgi_id}`, 'success');
+            } else {
+                facture.status = 'rejetee';
+                facture.reason = 'Erreur syntaxique QR Code';
+                
+                store.logs.unshift({
+                    date: new Date().toLocaleString('fr-FR'),
+                    type: 'ERROR',
+                    msg: `Rejet Facture ${facture.ref}: ${facture.reason}`
+                });
+
+                showToast(`Échec certification : ${facture.reason}`, 'error');
+            }
+
+            renderFactures(document.getElementById('main-view'));
+        }
+
+        /* --- PDF GENERATION & PREVIEW --- */
+        
+        function openPDFPreview(id) {
+            const f = store.factures.find(i => i.id === id);
+            if(!f) return;
+
+            const isCertified = f.status === 'certifiee';
+            const watermark = isCertified ? '' : '<div class="draft-watermark">NON CERTIFIÉ / BROUILLON</div>';
+            const qrSection = isCertified 
+                ? `<div style="text-align:center;"><img src="${f.qr}" style="width:100px; height:100px;"><br><small style="font-size:10px;">Scanner pour vérifier</small></div>` 
+                : `<div style="width:100px; height:100px; background:#eee; display:flex; align-items:center; justify-content:center; font-size:10px; text-align:center; color:#999;">En attente<br>certification</div>`;
+
+            const html = `
+                <div class="invoice-box">
+                    ${watermark}
+                    <table cellpadding="0" cellspacing="0">
+                        <tr class="top">
+                            <td colspan="2">
+                                <table>
+                                    <tr>
+                                        <td class="title">
+                                            <img src="https://z-cdn-media.chatglm.cn/files/4516ad78-e574-4427-9ab5-d55d44657d8d.png" style="width:100%; max-width:150px;">
+                                        </td>
+                                        <td>
+                                            Facture #: ${f.ref}<br>
+                                            Créée: ${f.date}<br>
+                                            <strong>YAOCOM'S GROUPE</strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        
+                        <tr class="information">
+                            <td colspan="2">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            YAOCOM'S GROUPE<br>
+                                            ${store.config.adresse}<br>
+                                            IFU: ${store.config.ifu}<br>
+                                            RCCM: ${store.config.rccm}
+                                        </td>
+                                        <td>
+                                            ${f.client}<br>
+                                            Abidjan, Côte d'Ivoire<br>
+                                            IFU Client: 1300099999999
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr class="heading">
+                            <td>Méthode de Paiement</td>
+                            <td>Check #</td>
+                        </tr>
+                        <tr class="details">
+                            <td>Virement Bancaire</td>
+                            <td>SBIV-2023-99</td>
+                        </tr>
+
+                        <tr class="heading">
+                            <td>Description</td>
+                            <td>Prix</td>
+                        </tr>
+                        <tr class="item">
+                            <td>${f.desc}</td>
+                            <td>${formatCurrency(f.ht)}</td>
+                        </tr>
+                        
+                        <tr class="total">
+                            <td></td>
+                            <td>Total HT: ${formatCurrency(f.ht)}</td>
+                        </tr>
+                         <tr class="total">
+                            <td></td>
+                            <td>TVA (18%): ${formatCurrency(f.ttc - f.ht)}</td>
+                        </tr>
+                        <tr class="total">
+                            <td></td>
+                            <td><strong>Total TTC: ${formatCurrency(f.ttc)}</strong></td>
+                        </tr>
+                    </table>
+                    
+                    <div class="dgi-footer">
+                        <div>
+                            <strong>CONFORMITÉ DGI / FNE</strong><br>
+                            ${isCertified ? `N° Certif: ${f.dgi_id}<br><span style="color:green">Certifié Électroniquement</span>` : `<span style="color:orange">En attente de certification</span>`}
+                        </div>
+                        ${qrSection}
+                    </div>
+                    
+                    <div style="margin-top:30px; text-align:center; font-size:10px; color:#999; border-top:1px solid #eee; padding-top:10px;">
+                        Document généré par WinTech ERP V2.5. Archivage électronique sécurisé (SAE) conforme.
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('pdf-content').innerHTML = html;
+            openModal('pdfModal');
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdf-content');
+            const opt = {
+                margin:       0.5,
+                filename:     `Facture_WinTech_${new Date().getTime()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            // Use html2pdf library
+            html2pdf().set(opt).from(element).save();
+            showToast('Téléchargement du PDF lancé...', 'success');
+        }
+
+        function showQR(url, ref) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay active';
+            modal.innerHTML = `
+                <div class="modal" style="text-align:center;">
+                    <div class="modal-header justify-between">
+                        <h3>QR Code DGI : ${ref}</h3>
+                        <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-4">Scannez ce code pour vérifier la validité fiscale auprès de la DGI.</p>
+                        <img src="${url}" alt="QR Code" style="width: 200px; height: 200px; border: 1px solid #ddd; padding: 10px;">
+                        <p class="mt-4 text-sm text-gray">Ce document est archivé électroniquement (SAE) conformément à la loi.</p>
+                    </div>
+                    <div class="modal-footer" style="justify-content:center;">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Fermer</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveDGIConfig() {
+            showToast('Configuration sauvegardée avec succès.', 'success');
+        }
+
+        function testDGIConnexion() {
+            showToast('Ping API DGI... 24ms', 'success');
+        }
+
+        // GIA Assistant Logic
+        function toggleGia() {
+            document.getElementById('gia-chat').classList.toggle('active');
+        }
+
+        function handleGiaInput(e) {
+            if(e.key === 'Enter') sendGiaMessage();
+        }
+
+        function sendGiaMessage() {
+            const input = document.getElementById('gia-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            addGiaMessage(text, 'user');
+            input.value = '';
+
+            setTimeout(() => {
+                let response = "Je ne suis pas sûr de comprendre. Pouvez-vous préciser ?";
+                const lower = text.toLowerCase();
+
+                if(lower.includes('pdf')) {
+                    response = "Vous pouvez visualiser et télécharger le PDF de n'importe quelle facture en cliquant sur l'icône fichier PDF dans la liste des factures.";
+                } else if(lower.includes('dgi') || lower.includes('facture') || lower.includes('certifi')) {
+                    response = "Pour certifier une facture, allez dans le menu Facturation, sélectionnez une facture 'En attente' et cliquez sur 'Certifier'.";
+                } else if(lower.includes('statut')) {
+                    response = "Consultez le tableau de bord pour voir le statut de vos factures.";
+                }
+
+                addGiaMessage(response, 'bot');
+            }, 800);
+        }
+
+        function addGiaMessage(text, sender) {
+            const container = document.getElementById('gia-messages');
+            const div = document.createElement('div');
+            div.className = `msg ${sender}`;
+            div.innerText = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Toast System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'info-circle';
+            if(type === 'success') icon = 'check-circle';
+            if(type === 'error') icon = 'exclamation-circle';
+
+            toast.innerHTML = `<i class="fas fa-${icon} text-${type}"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function logout() {
+            if(confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                document.body.innerHTML = `
+                    <div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f0f2f5;">
+                        <img src="https://z-cdn-media.chatglm.cn/files/4516ad78-e574-4427-9ab5-d55d44657d8d.png" style="width:150px; margin-bottom:2rem;">
+                        <h2 class="text-secondary">Déconnexion...</h2>
+                        <p>Redirection vers la page de connexion.</p>
+                    </div>
+                `;
+                setTimeout(() => location.reload(), 2000);
+            }
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        window.onload = () => {
+            router('dashboard');
+        };
+
+    </script>
+</body>
+</html>

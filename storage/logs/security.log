@@ -1,0 +1,21 @@
+[2026-03-19 10:14:23] [USER:SYSTEM] [IP:::1] ACTION: DB_AGENCE_ERROR | DETAILS: {"info":"\u00c9chec getAll: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'gescom.agences' doesn't exist"}
+[2026-03-19 10:22:05] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: ADM-AKR-2026-001"}
+[2026-03-19 10:22:10] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: SUP-YAK-1984-002"}
+[2026-03-19 10:22:34] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: aboua0001"}
+[2026-03-19 10:22:39] [USER:SYSTEM] [IP:::1] ACTION: SECURITY_ALERT | DETAILS: {"info":"Erreur v\u00e9rification agence: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'email' in 'field list'"}
+[2026-03-19 10:22:39] [USER:SYSTEM] [IP:::1] ACTION: SECURITY_ALERT | DETAILS: {"info":"Tentative d'intrusion: dev001 sur Agence ID 1"}
+[2026-03-19 11:13:42] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: ADM-AKR-2026-001"}
+[2026-03-21 13:04:11] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: COM-AKR-1988-001"}
+[2026-03-21 13:04:18] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: aboua0001"}
+[2026-03-21 13:04:25] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: SUP-YAK-1984-002"}
+[2026-03-23 14:03:12] [USER:2] [IP:::1] ACTION: CRITICAL_HUB_ERROR | DETAILS: {"info":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'date_creation' in 'where clause'"}
+[2026-03-23 14:03:23] [USER:2] [IP:::1] ACTION: SECURITY_BREACH | DETAILS: {"info":"Acc\u00e8s refus\u00e9 pour  sur \/wintech_erp1\/public\/management"}
+[2026-03-23 14:03:23] [USER:2] [IP:::1] ACTION: CRITICAL_HUB_ERROR | DETAILS: {"info":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'date_creation' in 'where clause'"}
+[2026-03-23 14:03:25] [USER:2] [IP:::1] ACTION: SECURITY_BREACH | DETAILS: {"info":"Acc\u00e8s refus\u00e9 pour  sur \/wintech_erp1\/public\/management"}
+[2026-03-23 14:03:25] [USER:2] [IP:::1] ACTION: CRITICAL_HUB_ERROR | DETAILS: {"info":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'date_creation' in 'where clause'"}
+[2026-03-23 14:03:28] [USER:2] [IP:::1] ACTION: SECURITY_BREACH | DETAILS: {"info":"Acc\u00e8s refus\u00e9 pour  sur \/wintech_erp1\/public\/clients"}
+[2026-03-23 14:03:28] [USER:2] [IP:::1] ACTION: CRITICAL_HUB_ERROR | DETAILS: {"info":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'date_creation' in 'where clause'"}
+[2026-03-23 14:03:31] [USER:2] [IP:::1] ACTION: SECURITY_BREACH | DETAILS: {"info":"Acc\u00e8s refus\u00e9 pour  sur \/wintech_erp1\/public\/clients"}
+[2026-03-23 14:03:31] [USER:2] [IP:::1] ACTION: CRITICAL_HUB_ERROR | DETAILS: {"info":"SQLSTATE[42S22]: Column not found: 1054 Unknown column 'date_creation' in 'where clause'"}
+[2026-03-23 14:03:35] [USER:2] [IP:::1] ACTION: AUTH_LOGOUT | DETAILS: {"info":"Utilisateur  s'est d\u00e9connect\u00e9."}
+[2026-03-23 14:03:46] [USER:SYSTEM] [IP:::1] ACTION: AUTH_FAILED | DETAILS: {"info":"\u00c9chec de connexion pour le matricule: ADM-AKR-2026-001"}

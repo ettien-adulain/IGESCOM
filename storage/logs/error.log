@@ -1,0 +1,26 @@
+[01-Mar-2026 21:17:54 Europe/Berlin] PHP Warning:  Undefined array key "user_nom" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:17:54 Europe/Berlin] PHP Deprecated:  explode(): Passing null to parameter #2 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:17:54 Europe/Berlin] PHP Warning:  Undefined array key "user_role" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:17:54 Europe/Berlin] PHP Deprecated:  strtolower(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:17:54 Europe/Berlin] PHP Warning:  Undefined array key "user_matricule" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 142
+[01-Mar-2026 21:18:02 Europe/Berlin] PHP Warning:  Undefined array key "user_nom" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:18:02 Europe/Berlin] PHP Deprecated:  explode(): Passing null to parameter #2 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:18:02 Europe/Berlin] PHP Warning:  Undefined array key "user_role" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:18:02 Europe/Berlin] PHP Deprecated:  strtolower(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:18:02 Europe/Berlin] PHP Warning:  Undefined array key "user_matricule" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 142
+[01-Mar-2026 21:18:23 Europe/Berlin] PHP Warning:  Undefined array key "user_nom" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:18:23 Europe/Berlin] PHP Deprecated:  explode(): Passing null to parameter #2 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:18:23 Europe/Berlin] PHP Warning:  Undefined array key "user_role" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:18:23 Europe/Berlin] PHP Deprecated:  strtolower(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:18:23 Europe/Berlin] PHP Warning:  Undefined array key "user_matricule" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 142
+[01-Mar-2026 21:19:55 Europe/Berlin] PHP Warning:  Undefined array key "user_nom" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:19:55 Europe/Berlin] PHP Deprecated:  explode(): Passing null to parameter #2 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:19:55 Europe/Berlin] PHP Warning:  Undefined array key "user_role" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:19:55 Europe/Berlin] PHP Deprecated:  strtolower(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:19:55 Europe/Berlin] PHP Warning:  Undefined array key "user_matricule" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 142
+[01-Mar-2026 21:19:56 Europe/Berlin] ROUTER_ABORT [404]: La route [/uploads/users/default.jpg] n'est pas répertoriée dans le système.
+[01-Mar-2026 21:24:14 Europe/Berlin] PHP Warning:  Undefined array key "user_nom" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:24:14 Europe/Berlin] PHP Deprecated:  explode(): Passing null to parameter #2 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 51
+[01-Mar-2026 21:24:14 Europe/Berlin] PHP Warning:  Undefined array key "user_role" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:24:14 Europe/Berlin] PHP Deprecated:  strtolower(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 52
+[01-Mar-2026 21:24:14 Europe/Berlin] PHP Warning:  Undefined array key "user_matricule" in C:\xampp\htdocs\wintech_erp1\views\layouts\footer.php on line 142

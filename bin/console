@@ -1,0 +1,78 @@
+<?php
+/**
+ * WINTECH ERP V2.5 - CLI SYSTEM TOOL
+ * Usage: php bin/console [command] [args]
+ */
+
+require_once __DIR__ . '/../core/autoload_custom.php';
+
+use Core\Config;
+use Core\Database\Connection;
+use App\Utils\Logger;
+
+Config::load();
+
+// Couleurs Terminal
+$green = "\033[32m"; $red = "\033[31m"; $yellow = "\033[33m"; $blue = "\033[34m"; $reset = "\033[0m";
+
+echo $blue . "=== WINTECH ERP V2.5 CONTROL CONSOLE ===\n" . $reset;
+
+$command = $argv[1] ?? 'help';
+
+try {
+    switch ($command) {
+        case 'db:backup':
+            echo "Initialisation de la sauvegarde...\n";
+            $db = Config::get('database');
+            $filename = "backup_wintech_" . date('Ymd_His') . ".sql";
+            $path = dirname(__DIR__) . "/storage/backups/" . $filename;
+            
+            // Détection automatique du binaire mysqldump
+            $mysqldump = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') ? 'C:\xampp\mysql\bin\mysqldump.exe' : 'mysqldump';
+            
+            $cmd = sprintf('%s -h %s -u %s %s %s > %s',
+                escapeshellarg($mysqldump),
+                escapeshellarg($db['host']),
+                escapeshellarg($db['username']),
+                (!empty($db['password']) ? "-p" . escapeshellarg($db['password']) : ""),
+                escapeshellarg($db['database']),
+                escapeshellarg($path)
+            );
+
+            exec($cmd, $output, $returnVar);
+            if ($returnVar === 0) echo $green . "SUCCESS: Sauvegarde créée -> $filename\n" . $reset;
+            else echo $red . "ERROR: Échec du backup. Vérifiez les droits et le chemin du binaire.\n" . $reset;
+            break;
+
+        case 'user:create-admin':
+            $matricule = $argv[2] ?? null;
+            $pass = $argv[3] ?? null;
+            if (!$matricule || !$pass) die($yellow . "Usage: php bin/console user:create-admin [matricule] [password]\n" . $reset);
+
+            $db = Connection::getInstance();
+            $hash = password_hash($pass, PASSWORD_BCRYPT);
+            $sql = "INSERT INTO utilisateurs (matricule, nom_complet, password, role, active) VALUES (?, 'Admin Système', ?, 'SUPERADMIN', 1)";
+            $db->prepare($sql)->execute([$matricule, $hash]);
+            echo $green . "SUCCESS: SuperAdmin [$matricule] créé avec succès.\n" . $reset;
+            break;
+
+        case 'app:clear':
+            echo "Purge du cache et des logs temporaires...\n";
+            $files = glob(dirname(__DIR__) . '/storage/cache/*.cache');
+            foreach ($files as $f) @unlink($f);
+            $logs = glob(dirname(__DIR__) . '/storage/logs/*.log');
+            foreach ($logs as $l) if(basename($l) !== 'security.log') @unlink($l);
+            echo $green . "Nettoyage terminé.\n" . $reset;
+            break;
+
+        case 'help':
+        default:
+            echo "Commandes :\n";
+            echo "  db:backup          : Sauvegarde complète de la base de données\n";
+            echo "  user:create-admin  : Créer un accès SuperAdmin d'urgence\n";
+            echo "  app:clear          : Nettoyer le cache et les fichiers temporaires\n";
+            break;
+    }
+} catch (Exception $e) {
+    echo $red . "CRITICAL ERROR: " . $e->getMessage() . "\n" . $reset;
+}

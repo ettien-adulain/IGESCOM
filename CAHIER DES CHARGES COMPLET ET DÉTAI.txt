@@ -1,0 +1,690 @@
+CAHIER DES CHARGES COMPLET ET DÉTAILLÉ 
+WINTECH ERP V2.5 ÉDITION GIA (GLOBAL INTEGRATED ARCHITECTURE) 
+Document Version : 2.5.0   
+Date de rédaction : 13 Avril 2026   
+Client : YAOCOM'S GROUPE   
+Statut : Version Finale Approuvée   
+SOMMAIRE 
+1. [PRÉSENTATION GÉNÉRALE ET CONTEXTE STRATÉGIQUE](1-présentation-générale
+et-contexte-stratégique) 
+2. [OBJECTIFS ET PÉRIMÈTRE FONCTIONNEL](2-objectifs-et-périmètre-fonctionnel) 
+3. [DESCRIPTION DÉTAILLÉE DES MODULES](3-description-détaillée-des-modules) 
+4. [SPÉCIFICATIONS TECHNIQUES ET ARCHITECTURE](4-spécifications-techniques-et
+architecture) 
+5. [IDENTITÉ VISUELLE ET ERGONOMIE](5-identité-visuelle-et-ergonomie) 
+6. [EXIGENCES DE CONFORMITÉ DGI/FNE](6-exigences-de-conformité-dgifne) 
+7. [SÉCURITÉ ET PROTECTION DES DONNÉES](7-sécurité-et-protection-des-données) 
+8. [CONTRAINTES D'EXPLOITATION ET DÉPLOIEMENT](8-contraintes-dexploitation-et
+déploiement) 
+9. [PROCESSUS DÉTAILLÉ DE DÉVELOPPEMENT](9-processus-détaillé-de
+développement) 
+10. [PHASES D'EXÉCUTION ET LIVRABLES](10-phases-dexécution-et-livrables) 
+11. [PLAN DE TEST ET RECETTE](11-plan-de-test-et-recette) 
+12. [MAINTENANCE ET ÉVOLUTIONS PRÉVISIONNELLES](12-maintenance-et
+évolutions-prévisionnelles) 
+13. [ANNEXES TECHNIQUES](13-annexes-techniques) --- 
+1. PRÉSENTATION GÉNÉRALE ET CONTEXTE STRATÉGIQUE 
+1.1 Contexte et justification du projet 
+YAOCOM'S GROUPE, acteur majeur de la distribution de matériel informatique et de 
+solutions numériques en Côte d'Ivoire, fait face à des défis croissants de gestion 
+intégrée de son activité : - Dispersion des outils : Utilisation d'outils bureautiques et de logiciels non 
+interconnectés - Non-conformité fiscale partielle : Absence d'intégration native avec l'API DGI pour la 
+Facture Normalisée Électronique (FNE) - Manque de traçabilité : Difficulté à retracer le cycle de vie complet d'une transaction - Décisions non assistées : Absence d'indicateurs prédictifs pour l'aide à la décision - Temps de traitement élevé : Processus manuels générant des délais et des erreurs 
+Le présent projet vise à déployer WinTech ERP V2.5 Édition GIA, un système de gestion 
+d'entreprise nouvelle génération qui automatise l'ensemble de la chaîne commerciale, 
+logistique, RH et comptable, tout en garantissant une conformité fiscale totale avec la 
+Direction Générale des Impôts (DGI) de Côte d'Ivoire. 
+1.2 Vision stratégique 
+WinTech ERP n'est pas un simple logiciel de saisie. C'est un Système d'Aide à la 
+Décision (SAD) intelligent qui : - Transforme chaque transaction en donnée analytique exploitable - Automatise la cascade financière conformément aux standards Sage 100 Commercial - Garantit une conformité fiscale rigoureuse via l'intégration native DGI/FNE - Assure une traçabilité totale grâce à un Système d'Archivage Électronique (SAE) normé 
+- Anticipe les besoins grâce à un assistant IA contextuel nommé GIA (Gestion Intégrée et 
+Automatisée) 
+1.3 Valeur ajoutée pour l'entreprise 
+| Axe de valeur | Bénéfice mesurable | 
+|---------------|---------------------| 
+| Productivité | Réduction de 70% du temps de saisie commerciale | 
+| Conformité | Certifications fiscales instantanées, zéro rejet | 
+| Fiabilité | 0% d'erreur comptable grâce aux colonnes générées SQL | 
+| Visibilité | Pilotage en temps réel via KPI et alertes prédictives | 
+| Traçabilité | Archivage électronique inaltérable conforme à la législation | 
+| Sécurité | Isolation des secrets, requêtes préparées, logs d'audit | 
+1.4 Publics cibles et utilisateurs 
+Le système est destiné à cinq profils d'utilisateurs distincts : 
+| Profil | Rôle principal | Fonctionnalités clés | 
+|--------|----------------|----------------------| 
+| Commercial | Gestion des devis et factures | Cotation rapide, cascade financière, 
+transformation devis→facture | 
+| Magasinier | Gestion des stocks et expéditions | Picking list, alertes rupture, suivi 
+livraisons | 
+| RH/Comptable | Gestion paie et analyse financière | Masse salariale, KPI, reporting par 
+agence | 
+| Manager | Supervision et validation | Dashboard consolidé, alertes, validation des 
+ventes | 
+| Administrateur | Configuration et maintenance | Paramétrage DGI, gestion utilisateurs, 
+audits | 
+--- 
+2. OBJECTIFS ET PÉRIMÈTRE FONCTIONNEL 
+2.1 Objectifs généraux 
+Le projet doit atteindre les objectifs stratégiques suivants : 
+Objectif 1 : Automatisation complète du cycle de vente - De la création du devis à la certification fiscale, sans ressaisie - Cascade financière automatisée (remise, escompte, frais de port, TVA 18%) - Transformation un clic devis accepté → facture définitive 
+Objectif 2 : Conformité fiscale DGI/FNE - Certification automatique de chaque facture auprès de l'API DGI - Génération et apposition d'un QR Code de certification sur chaque facture - Journal exhaustif des échanges avec la DGI pour audit - Mode dégradé avec file d'attente en cas d'indisponibilité DGI 
+Objectif 3 : Traçabilité et archivage légal - Archivage électronique de tous les documents (PDF/A) - Nommage normalisé pour contrôle fiscal - Conservation inaltérable sur 10 ans minimum - Horodatage et signature électronique 
+Objectif 4 : Aide à la décision - Tableaux de bord KPI temps réel 
+- Alertes prédictives (baisse de marge, rupture stock, impayés) - Assistant IA GIA accessible en langage naturel 
+2.2 Périmètre fonctionnel (inclusions) 
+Le projet inclut le développement des modules suivants : 
+| Module | Code | Description | 
+|--------|------|-------------| 
+| ATIC (Catalogue) | M1 | Gestion des articles avec marge auto 30%, référence 
+intelligente | 
+| CRM | M2 | Gestion clients (particuliers/professionnels), IFU, RCCM, solvabilité | 
+| Commercial | M3 | Devis, proforma, cascade financière Sage 100 | 
+| Facturation | M4 | Génération factures, certification DGI, SAE | 
+| Logistique | M5 | Picking list, gestion stocks, expéditions | 
+| RH | M6 | Fiches employés, calcul masse salariale | 
+| Comptabilité analytique | M7 | KPI, résultats par agence, reporting | 
+| DGI/FNE | M8 | Intégration API DGI, certification, QR Code, journal | 
+| IA GIA | M9 | Assistant contextuel, alertes prédictives | 
+| Administration | M10 | Utilisateurs, rôles, configurations, audits | 
+2.3 Périmètre fonctionnel (exclusions) 
+Ne sont pas inclus dans le présent périmètre : - Interface mobile native (prévue en V3.0) - Module de e-commerce public (prévu en V3.0) - Intégration avec des logiciels comptables externes tiers 
+- Multi-devises (prévu en V3.0) - Relances automatiques par email (prévu en V3.0) 
+2.4 Hypothèses et dépendances 
+Le succès du projet repose sur les hypothèses suivantes : - YAOCOM'S GROUPE fournira un accès aux API DGI (clés de test puis production) - L'hébergement sur PlanetHoster sera conforme aux spécifications techniques - Les utilisateurs finaux seront formés et disponibles pour la recette - Les données initiales (catalogue, clients, employés) seront fournies sous format 
+structuré --- 
+3. DESCRIPTION DÉTAILLÉE DES MODULES 
+3.1 Module ATIC – Catalogue produits 
+3.1.1 Fonctionnalités détaillées 
+Le module ATIC constitue le référentiel central de tous les articles commercialisés. 
+Chaque fiche article contient : 
+Champs obligatoires : - Référence (génération automatique ou manuelle) - Désignation (libellé court) - Description technique (champ texte riche) - Catégorie (ex: Ordinateurs, Périphériques, Réseau) 
+- Prix d'achat HT (en FCFA) - Photo HD (upload format JPG/PNG, max 5 Mo) - Unité de vente (pièce, lot, etc.) 
+Champs calculés automatiquement : 
+``` 
+Prix de vente HT = Prix d'achat HT × 1,30 (marge fixe 30%) 
+TVA = 18% (taux OHADA) 
+Prix de vente TTC = PV HT × (1 + TVA/100) 
+``` 
+Génération de la référence intelligente : 
+``` 
+Format : REF-[INITIALES]-[AAAA]-[MM]-[JJ]-[HHMM]-[USER_ID] 
+Exemple : REF-ORD-2025-04-13-1435-42 
+``` 
+3.1.2 Règles de gestion 
+| Règle | Description | 
+|-------|-------------| 
+| RG-ATIC-01 | La marge de 30% est obligatoire et non modifiable | 
+| RG-ATIC-02 | Un article ne peut être supprimé s'il apparaît dans un devis/facture | 
+| RG-ATIC-03 | La photo produit est optionnelle mais recommandée | 
+| RG-ATIC-04 | Le stock minimum est configurable par catégorie | 
+3.2 Module CRM – Gestion clients 
+3.2.1 Typologie des clients 
+Client Particulier : - Nom, prénom - Email, téléphone, adresse - Ville, pays - Historique des achats 
+Client Professionnel : - Raison sociale - IFU (Identifiant Fiscal Unique) – obligatoire pour facturation DGI - RCCM (Registre du Commerce et du Crédit Mobilier) - Logo de l'entreprise - Encours maximal autorisé - Contact principal 
+3.2.2 Suivi de solvabilité 
+Le système calcule automatiquement un indicateur de solvabilité basé sur : - Encours actuel / Encours maximal autorisé - Historique des paiements (retards, impayés) - Ancienneté de la relation commerciale 
+| Seuil | Indicateur | Action recommandée | 
+|-------|------------|--------------------| 
+| < 70% | Vert | Vente normale | 
+| 70% – 90% | Orange | Vente avec supervision | 
+| > 90% | Rouge | Vente bloquée sauf validation manager | 
+3.3 Module Commercial – Cascade financière Sage 100 
+3.3.1 Algorithme de calcul 
+La cascade financière reproduit fidèlement le moteur de calcul de Sage 100 
+Commercial : 
+``` 
+Étape 1 : HT Brut 
+= Σ (Quantité × Prix unitaire HT) 
+Étape 2 : Remise Commerciale 
+= HT Brut × (Remise % / 100) 
+Net Commercial = HT Brut – Remise Commerciale 
+Étape 3 : Escompte Financier 
+= Net Commercial × (Escompte % / 100) 
+Net Financier = Net Commercial – Escompte Financier 
+Étape 4 : Frais de Port 
+= Frais de port forfaitaires ou réels 
+Net Taxable = Net Financier + Frais de Port 
+Étape 5 : TVA (taux OHADA 18%) 
+= Net Taxable × (18 / 100) 
+Étape 6 : Net à Payer TTC 
+= Net Taxable + TVA 
+``` 
+3.3.2 Interface de cotation 
+L'interface de création de devis intègre : 
+Recherche instantanée AJAX : - Auto-complétion clients dès la 3e lettre tapée - Auto-complétion articles avec affichage du prix et du stock - Debounce de 300ms pour éviter les appels serveur intempestifs 
+Calcul dynamique temps réel : - Chaque saisie (quantité, remise, escompte) déclenche un recalcul complet - Affichage immédiat des totaux intermédiaires et final - Visualisation de la TVA collectée 
+3.4 Module Facturation et DGI/FNE 
+3.4.1 Workflow de certification fiscale 
+Le processus de certification DGI est entièrement automatisé : 
+``` 
+[Facture créée] → [Statut: Non certifiée] 
+↓ 
+[Validation commerciale] → [Envoi API DGI] 
+↓ 
+[Attente réponse DGI] (timeout 30s) 
+       ↓ 
+    ├─ [Succès] → [Statut: Certifiée] → [Génération QR Code] → [Archivage SAE] 
+    │ 
+    └─ [Échec] → [Statut: Rejetée] → [Journalisation] → [File d'attente] 
+                                              ↓ 
+                                    [Tentative automatique toutes les 5 min] 
+``` 
+ 
+ 3.4.2 Payload DGI – Structure JSON 
+ 
+```json 
+{ 
+  "entete": { 
+    "version": "2.0", 
+    "date_envoi": "2025-04-13T14:35:00+00:00", 
+    "ifu_emetteur": "IFU123456789", 
+    "api_key": "••••••••" 
+  }, 
+  "facture": { 
+    "numero": "FA-2025-0001", 
+    "date_emission": "2025-04-13", 
+    "date_echeance": "2025-05-28", 
+    "montant_ht": 1000000, 
+    "tva": 180000, 
+    "montant_ttc": 1180000, 
+    "devise": "XOF" 
+  }, 
+"emetteur": { 
+"nom": "YAOCOM'S GROUPE", 
+"ifu": "IFU123456789", 
+"adresse": "Abidjan Plateau, Côte d'Ivoire" 
+}, 
+"recepteur": { 
+"nom": "ENTREPRISE CLIENT", 
+"ifu": "IFU987654321", 
+"rccm": "RCCM-ABJ-2025-1234", 
+"email": "contact@client.ci", 
+"telephone": "+225 07 XX XX XX" 
+}, 
+"lignes": [...], 
+"signature": "sha256(...)" 
+} 
+``` 
+3.5 Module Logistique 
+3.5.1 Interface magasinier (Picking list) 
+L'écran dédié au magasinier affiche : - Liste des factures certifiées en attente de préparation - Par défaut : tri par date d'émission croissante - Visualisation du détail des articles à prélever - Indication de l'emplacement de stockage 
+Actions disponibles : 
+1. Démarrer la préparation → Statut "En préparation" 
+2. Valider la préparation → Statut "Prêt" (déstockage automatique) 
+3. Signaler une rupture → Notification commercial via Ticker 
+3.5.2 Gestion des ruptures de stock 
+En cas de stock insuffisant : - Le magasinier clique sur "Rupture" pour l'article concerné - Le système crée une alerte dans le Ticker de tous les commerciaux - La facture reste en statut "En attente" - Notification push (email facultatif) envoyée au responsable approvisionnement 
+3.6 Module RH et Comptabilité analytique 
+3.6.1 Fiche employé et coût réel 
+Chaque employé possède une fiche avec : 
+| Champ | Description | Source | 
+|-------|-------------|--------| 
+| Salaire de base | Fixe mensuel | Saisie RH | 
+| Primes | Indemnités, avantages | Saisie RH | 
+| Charges patronales | CNPS, taxes diverses (15% forfaitaire) | Configuration | 
+| Coût réel agent | Salaire brut + charges patronales | Calcul automatique | 
+| Masse salariale | Σ coûts réels tous agents | Calcul automatique | 
+3.6.2 Indicateurs clés (KPI) 
+Le tableau de bord présente les indicateurs suivants : - Chiffre d'affaires HT (période courante vs période précédente) - Charges totales (achats, frais généraux, masse salariale) - Résultat net = CA HT – Charges - Marge brute = (CA HT – Coût d'achat) / CA HT × 100 - Rotation des stocks (jours) - Délai moyen d'encaissement (jours) 
+3.7 Assistant IA GIA 
+3.7.1 Capacités de l'assistant 
+GIA (Gestion Intégrée et Automatisée) est un chatbot intelligent capable de : 
+1. Interrogation du stock : - *Utilisateur :* "Combien de PC HP ProBook avons-nous en stock ?" - *GIA :* "Stock actuel : 23 unités (seuil d'alerte : 5). Dernière entrée le 10/04/2025." 
+2. Assistance procédurale : - *Utilisateur :* "Comment créer un nouveau fournisseur ?" - *GIA :* "Navigation : Menu Configuration → Fournisseurs → Nouveau. Remplir IFU, 
+RCCM, coordonnées bancaires. La validation est immédiate." 
+3. Alertes prédictives : - *Alerte automatique :* "    
+La marge sur la catégorie 'Ordinateurs' a baissé de 5% ce 
+mois. Vérifiez les prix d'achat fournisseurs." 
+4. Analyses avancées : - *Utilisateur :* "Quel est le client le plus rentable ce trimestre ?" - *GIA :* "SARL TECHNOLOGIE SERVICES – CA : 45M FCFA – Marge : 12.5M FCFA (28%)." 
+3.7.2 Architecture technique de GIA 
+Le chatbot repose sur : - Analyse lexicale légère (mots-clés prédéfinis) - Mapping requête → action métier (SQL ou documentation) - Pas d'IA générative externe (fonctionnement hors ligne) - Journalisation de toutes les interactions --- 
+4. SPÉCIFICATIONS TECHNIQUES ET ARCHITECTURE 
+4.1 Architecture N-Tier découplée 
+L'application suit une architecture MVC (Modèle-Vue-Contrôleur) en couches strictes : 
+``` 
+┌─────────────────────────────────────────────────────────────┐ 
+│                    
+│                   
+ PRÉSENTATION (Vues)                     
+Templates HTML + Assets                   
+ │ 
+ │ 
+├─────────────────────────────────────────────────────────────┤ 
+│                    
+│           
+ CONTRÔLEURS (C)                         
+Validation requêtes, orchestration                
+ │ 
+ │ 
+├─────────────────────────────────────────────────────────────┤ 
+│                      
+ SERVICES                              
+ │ 
+│              
+ Logique métier, règles de gestion             
+ │ 
+├─────────────────────────────────────────────────────────────┤ 
+│                   
+│                
+ REPOSITORIES                             
+Accès aux données (SQL pur)                   
+ │ 
+│ 
+├─────────────────────────────────────────────────────────────┤ 
+│                    
+│                 
+BASE DE DONNÉES                          
+MySQL avec colonnes générées                
+ │ 
+ │ 
+└─────────────────────────────────────────────────────────────┘ 
+``` 
+4.2 Composants techniques obligatoires 
+| Composant | Rôle | Exigence | 
+|-----------|------|----------| 
+| Router intelligent | Mapping URL → Contrôleur | Détection auto environnement 
+(local/prod) | 
+| Container de services | Injection dépendances | Mémoire RAM optimisée | 
+| Autoloader PSR-4 | Chargement classes dynamique | Aucun require manuel | 
+| Database (PDO) | Connexion unique | Singleton, requêtes préparées | 
+| Middleware | Auth, CSRF, logging | Exécution avant contrôleur | 
+4.3 Base de données – Détails techniques 
+4.3.1 Colonnes générées (Generated Columns) 
+MySQL 5.7+ supporte les colonnes virtuelles et stockées. WinTech ERP les utilise pour 
+garantir 0% d'erreur comptable : 
+```sql -- Colonne calculée : Prix de vente HT (marge 30%) 
+pv_ht DECIMAL(10,2) GENERATED ALWAYS AS (pa_ht * 1.30) STORED -- Colonne calculée : Prix de vente TTC (TVA 18%) 
+pv_ttc DECIMAL(10,2) GENERATED ALWAYS AS (pv_ht * 1.18) STORED -- Colonne calculée : Net à payer dans facture 
+net_a_payer DECIMAL(15,2) GENERATED ALWAYS AS (net_taxable * 1.18) STORED 
+``` 
+4.3.2 Indexation et performances 
+Les tables critiques sont indexées sur : - `clients.ifu` (recherche fréquente pour DGI) - `factures.statut_dgi` (filtrage certifications en attente) - `articles.reference` (auto-complétion) - `devis.client_id` (jointures CRM) 
+4.4 Environnements de développement et production 
+| Environnement | Serveur | PHP | MySQL | URL | 
+|---------------|---------|-----|-------|-----| 
+| Développement | XAMPP local | 8.1 | 5.7 | http://localhost/winterp | 
+| Recette | PlanetHoster (staging) | 8.1 | 5.7 | https://recette.winterp.ci | 
+| Production | PlanetHoster (prod) | 8.1 | 5.7 | https://erp.yaocoms.ci | --- 
+5. IDENTITÉ VISUELLE ET ERGONOMIE 
+5.1 Charte graphique "Elite V3" 
+| Élément | Code hexadécimal | Usage | 
+|---------|------------------|-------| 
+| Noir Matte | `0f172a` | Fond des menus, sidebar, structures | 
+| Rouge Crimson | `e11d48` | Identité, boutons primaires, alertes | 
+| Jaune Électrique | `e6db00` | Horloge, focus temporel, agence | 
+| Gris Slate | `64748b` | Tuiles opérationnelles, textes secondaires | 
+| Blanc Pur | `ffffff` | Surfaces de travail (cartes, formulaires) | 
+| Vert Institutionnel | `00695c` | Validations, succès, certifications | 
+5.2 Ergonomie avancée 
+5.2.1 Sidebar rétractable - Largeur normale : 280px - Largeur réduite : 80px (seules les icônes restent visibles) - L'état (collapsed/expanded) est mémorisé dans localStorage - Au chargement, l'état précédent est restauré automatiquement 
+5.2.2 Action Ticker (flux temps réel) - Position : En-tête de l'application - Contenu : Dernières actions (devis créés, factures certifiées, ruptures stock) - Technologie : Polling AJAX toutes les 10 secondes (WebSocket optionnel) 
+- Animation : Défilement continu horizontal 
+5.2.3 Glassmorphism - Utilisé principalement sur les cartes et la page de connexion - Effet : `background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);` - Sensation de "luxe" et de modernité 
+5.3 Accessibilité et responsive - Compatible avec les lecteurs d'écran (attributs ARIA) - Contraste des couleurs conforme WCAG 2.1 niveau AA - Adaptation aux tablettes (largeur < 1024px) et mobiles (largeur < 768px) - La sidebar se transforme en menu hamburger sur mobile --- 
+6. EXIGENCES DE CONFORMITÉ DGI/FNE 
+6.1 Obligations légales 
+Conformément à la réglementation OHADA et aux directives de la DGI de Côte d'Ivoire, 
+toute facture émise doit : 
+1. Être certifiée par l'API DGI avant d'être considérée comme valide 
+2. Contenir l'IFU de l'émetteur et du récepteur (professionnel) 
+3. Afficher un QR Code contenant les données de certification 
+4. Être numérotée séquentiellement sans trous dans la numérotation 
+5. Comporter les mentions légales obligatoires 
+6. Être archivée pendant 10 ans sous forme inaltérable (PDF/A) 
+6.2 Architecture d'intégration DGI 
+``` 
+┌──────────────┐      HTTPS       ┌──────────────┐ 
+│  WinTech ERP │ ───────────────→ │  API DGI     │ 
+│             
+│             
+ │ ←─────────────── │  (Portail    │ 
+ │   
+ JSON + QR     │   Partenaire) │ 
+└──────────────┘                 
+│                                  
+│ En cas d'erreur                   
+↓                                  
+┌──────────────┐                 
+│ File d'attente│                  
+│ (reprise auto)│                  
+└──────────────┘                 
+``` 
+ └──────────────┘ 
+│ 
+↓ 
+6.3 Gestion des erreurs DGI 
+│ 
+ ┌──────────────┐ 
+│ Journal DGI  │ 
+│ (traçabilité)│ 
+ └──────────────┘ 
+| Code erreur | Signification | Action système | 
+|-------------|---------------|----------------| 
+| `IFU_INVALIDE` | IFU du client non reconnu | Blocage, demande correction | 
+| `TIMEOUT` | API DGI indisponible | File d'attente, réessai 5 min | 
+| `SIGNATURE_INVALIDE` | Erreur de signature | Nouvel essai automatique | 
+| `FACTURE_DUPLICATA` | Numéro déjà certifié | Alerte, bloquage | 
+| `HTTP_500` | Erreur interne DGI | File d'attente avec backoff | 
+6.4 Table de journalisation DGI 
+Chaque échange avec l'API DGI est enregistré dans `dgi_journal` avec : - Horodatage précis (secondes) - Durée de l'appel (millisecondes) - Payload complet (requête) - Réponse complète (ou erreur) - Code HTTP - Adresse IP source --- 
+7. SÉCURITÉ ET PROTECTION DES DONNÉES 
+7.1 Politique de sécurité 
+La sécurité est organisée selon 5 piliers : 
+| Pilier | Mesures | 
+|--------|---------| 
+| Authentification | Bcrypt (12 rounds), session PHP sécurisée, expiration configurable | 
+| Intégrité des données | Colonnes générées SQL, triggers, clés étrangères | 
+| Confidentialité | .env hors dépôt, chiffrement des mots de passe, logs anonymisés | 
+| Disponibilité | Backups quotidiens, mode dégradé DGI, redondance serveur | 
+| Non-répudiation | Journal d'audit complet, signature électronique DGI | 
+7.2 Protection contre les injections SQL 
+Toutes les requêtes SQL utilisent des requêtes préparées via PDO : 
+```php 
+// Non sécurisé (interdit) 
+$sql = "SELECT * FROM users WHERE email = '$email'"; 
+// Sécurisé (obligatoire) 
+$stmt = $db->prepare("SELECT * FROM users WHERE email = ?"); 
+$stmt->execute([$email]); 
+``` 
+7.3 Protection CSRF 
+Chaque formulaire POST inclut un token unique : 
+```php 
+// Génération 
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32)); 
+// Vérification (middleware) 
+if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) { 
+throw new Exception('CSRF token invalide'); 
+} 
+``` 
+7.4 Isolation des secrets 
+Le fichier `.env` n'est jamais versionné (ajouté à `.gitignore`). Il contient : - Identifiants base de données - Clés API DGI - Secret key pour sessions - Configuration spécifique production --- 
+8. CONTRAINTES D'EXPLOITATION ET DÉPLOIEMENT 
+8.1 Prérequis serveur (PlanetHoster) 
+| Composant | Version minimale | Recommandation | 
+|-----------|------------------|----------------| 
+| PHP | 8.1 | 8.2+ | 
+| MySQL | 5.7 | 8.0+ | 
+| Extensions PHP | PDO, curl, json, mbstring, gd | Toutes activées | 
+| Espace disque | 2 Go | 10 Go (archivage SAE) | 
+| RAM | 512 Mo | 1 Go | 
+| Cron | Oui | Pour file attente DGI | 
+8.2 Scripts de maintenance (CLI) 
+| Commande | Fonction | Fréquence recommandée | 
+|----------|----------|------------------------| 
+| `bin/console db:backup` | Sauvegarde BDD | Quotidienne (2h) | 
+| `bin/console dgi:process-queue` | Traite file attente DGI | Toutes les 5 min | 
+| `bin/console dgi:sync-all` | Synchronise toutes factures non certifiées | À la demande | 
+| `bin/console app:clear` | Vide caches et logs | Hebdomadaire | 
+8.3 Configuration cron (exemple) 
+```bash 
+Traitement file attente DGI toutes les 5 minutes 
+*/5 * * * * /usr/bin/php /home/winterp/bin/console dgi:process-queue >> 
+/home/winterp/storage/logs/cron.log 2>&1 
+Backup quotidien à 2h du matin 
+0 2 * * * /usr/bin/php /home/winterp/bin/console db:backup 
+Nettoyage logs mensuel 
+0 3 1 * * /usr/bin/find /home/winterp/storage/logs -name "*.log" -mtime +30 -delete 
+``` --- 
+9. PROCESSUS DÉTAILLÉ DE DÉVELOPPEMENT 
+9.1 Méthodologie 
+Le développement suit une méthodologie Agile adaptée avec des sprints de 2 semaines. 
+Chaque sprint livre un incrément fonctionnel testé et documenté. 
+Cérémonies clés : 
+- Planification de sprint (2h) – Définition des user stories - Daily meeting (15 min) – Synchronisation quotidienne - Revue de sprint (1h) – Démonstration au client - Rétrospective (1h) – Amélioration continue 
+9.2 Rôles et responsabilités 
+| Rôle | Personne | Responsabilités | 
+|------|----------|-----------------| 
+| Product Owner | Représentant YAOCOM'S | Définit les priorités, valide les livrables | 
+| Scrum Master | Chef de projet technique | Anime les cérémonies, lève les blocages | 
+| Lead Developer | Architecte technique | Valide l'architecture, code les parties critiques 
+| 
+| Développeur Full Stack | (2 personnes) | Développent les fonctionnalités | 
+| Testeur QA | (1 personne) | Tests fonctionnels et non fonctionnels | 
+9.3 Outils de développement 
+| Catégorie | Outil | Usage | 
+|-----------|-------|-------| 
+| Versionnement | Git (GitHub) | Code source | 
+| Gestion de projet | Jira / Trello | Suivi des sprints | 
+| Documentation | Confluence | Spécifications | 
+| Tests | PHPUnit | Tests unitaires | 
+| Base de données | phpMyAdmin / Adminer | Administration | 
+| IDE recommandé | VS Code / PHPStorm | Développement | 
+9.4 Standards de codage 
+- PHP : PSR-1, PSR-12 (normes d'écriture) - SQL : Indentation stricte, alias explicites - CSS : BEM (Block Element Modifier) - JavaScript : ES6+, modules, async/await - Commits Git : Convention Conventional Commits (`feat:`, `fix:`, `docs:`) --- 
+10. PHASES D'EXÉCUTION ET LIVRABLES 
+10.1 Planning général (12 semaines) 
+| Phase | Sprints | Durée | Livrable principal | 
+|-------|---------|-------|---------------------| 
+| Cadrage | Sprint 0 | 1 semaine | Architecture, environnement dev | 
+| Fondations | Sprint 1-2 | 2 semaines | Core, authentification, base données | 
+| Référentiels | Sprint 3-4 | 2 semaines | CRUD articles, clients, catalogue | 
+| Cœur métier | Sprint 5-6 | 2 semaines | Devis, cascade financière, factures | 
+| DGI/FNE | Sprint 7 | 1 semaine | Intégration API DGI, QR Code, file attente | 
+| Logistique & RH | Sprint 8 | 1 semaine | Picking, stocks, paie | 
+| Reporting & IA | Sprint 9 | 1 semaine | KPI, dashboard, assistant GIA | 
+| Finalisation | Sprint 10 | 1 semaine | Tests, déploiement, documentation | 
+10.2 Détail des sprints 
+Sprint 0 – Cadrage (J-7 à J0) 
+| Activité | Durée | Responsable | 
+|----------|-------|-------------| 
+| Installation environnement XAMPP | 1j | DevOps | 
+| Mise en place structure dossiers | 0,5j | Lead Dev | 
+| Configuration Git + repository | 0,5j | DevOps | 
+| Rédaction architecture technique | 1j | Lead Dev | 
+| Validation des spécifications | 1j | Product Owner | 
+Livrables : Environnement de développement opérationnel, arborescence validée 
+Sprint 1 – Infrastructure Core (J1 à J10) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Router | Routeur intelligent avec détection env | 5 | 
+| Container | Conteneur de services (injection dépendances) | 3 | 
+| Database | Singleton PDO avec requêtes préparées | 3 | 
+| Request/Response | Gestion des requêtes HTTP | 2 | 
+| Middleware | Auth, CSRF, Role | 5 | 
+| Autoloader PSR-4 | Composer + chargement dynamique | 2 | 
+Livrables : Moteur interne fonctionnel, page "Hello World" routée 
+Sprint 2 – Base de données et authentification (J11 à J20) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Script SQL | Tables principales + generated columns | 8 | 
+| Modèles | User, Client, Article (Active Record léger) | 5 | 
+| Authentification | Login, logout, session, bcrypt | 5 | 
+| Layout principal | Sidebar, header, footer (HTML/CSS) | 5 | 
+| Dashboard | Page d'accueil avec météo et ticker | 3 | 
+Livrables : Base de données installée, authentification fonctionnelle 
+Sprint 3 – Catalogue ATIC (J21 à J30) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| CRUD articles | Création, lecture, mise à jour, suppression | 5 | 
+| Marge 30% | Calcul automatique via colonne générée | 2 | 
+| Référence intelligente | Génération automatique format REF-... | 3 | 
+| Upload photo | Upload, redimensionnement, validation | 3 | 
+| Recherche articles | Auto-complétion AJAX | 3 | 
+| Vues catalogue | Liste, formulaire, détail | 4 | 
+Livrables : Gestion complète du catalogue produits 
+Sprint 4 – CRM Clients (J31 à J40) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| CRUD clients | Particulier et professionnel | 5 | 
+| Champs DGI | IFU, RCCM, validation format | 3 | 
+| Solvabilité | Calcul automatique encours/seuil | 3 | 
+| Recherche clients | Auto-complétion AJAX | 2 | 
+| Historique achats | Affichage des transactions | 3 | 
+| Vues CRM | Liste, formulaire, fiche détaillée | 4 | 
+Livrables : Base clients complète avec IFU/RCCM 
+Sprint 5 – Devis et cascade financière (J41 à J50) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Création devis | Interface de cotation | 5 | 
+| Cascade Sage 100 | 6 étapes de calcul | 8 | 
+| Calcul dynamique | JavaScript temps réel | 5 | 
+| Gestion lignes | Ajout/suppression articles | 3 | 
+| PDF proforma | Génération via Dompdf | 3 | 
+| Statut "CLIENT OK" | Validation et transformation | 3 | 
+Livrables : Devis fonctionnel avec impression PDF 
+Sprint 6 – Facturation et SAE (J51 à J60) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Transformation devis→facture | Copie des données | 3 | 
+| Numérotation séquentielle | Auto-incrément sans trou | 2 | 
+| PDF facture | Génération avec mentions légales | 3 | 
+| Archivage SAE | Stockage /public/uploads/pdf_archives/ | 2 | 
+| Workflow validation | Validation manager optionnelle | 3 | 
+| Liste factures | Filtres, recherche, export | 4 | 
+Livrables : Facturation complète avec archivage 
+Sprint 7 – Intégration DGI/FNE (J61 à J70) – SPRINT CRITIQUE 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| DGI Service | Certification, payload, signature | 8 | 
+| API client | cURL, timeout, gestion erreurs | 5 | 
+| Journal DGI | Enregistrement tous échanges | 3 | 
+| QR Code | Génération via library | 3 | 
+| File d'attente | Mode dégradé, reprise auto | 5 | 
+| Interface DGI | Configuration, journal, rejets | 5 | 
+| Script CLI | dgi:process-queue | 2 | 
+Livrables : Certification DGI complète + file attente 
+Sprint 8 – Logistique et RH (J71 à J80) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Picking list | Interface magasinier | 5 | 
+| Gestion stocks | Mouvements, déstockage automatique | 5 | 
+| Ruptures | Alertes Ticker + notifications | 3 | 
+| Fiches employés | CRUD employés | 3 | 
+| Masse salariale | Calcul automatique | 3 | 
+| Suivi expédition | Statuts (Préparation, Prêt, Livré) | 3 | 
+Livrables : Logistique et RH opérationnels 
+Sprint 9 – Reporting et IA GIA (J81 à J90) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| KPI Dashboard | Graphiques Chart.js | 5 | 
+| Calcul résultat net | Par agence, global | 3 | 
+| Assistant GIA | Chatbot flottant | 8 | 
+| Alertes prédictives | Détection anomalies | 5 | 
+| Export reporting | Excel/CSV | 3 | 
+| Documentation utilisateur | Guides, vidéos | 3 | 
+Livrables : Tableau de bord analytique + IA 
+Sprint 10 – Finalisation (J91 à J100) 
+| Tâche | Description | Points | 
+|-------|-------------|--------| 
+| Tests de charge | Simulation 100 utilisateurs | 5 | 
+| Audit sécurité | Vérification OWASP | 3 | 
+| Déploiement PlanetHoster | Mise en production | 5 | 
+| Formation utilisateurs | 2 sessions (4h chacune) | 3 | 
+| Documentation technique | API, installation, DGI | 3 | 
+| Recette finale | Validation client | 3 | 
+Livrables : Application en production, documentation complète 
+--- 
+11. PLAN DE TEST ET RECETTE 
+11.1 Typologie des tests 
+| Type de test | Outil | Fréquence | Seuil d'acceptation | 
+|--------------|-------|-----------|---------------------| 
+| Tests unitaires | PHPUnit | À chaque commit | Couverture > 80% | 
+| Tests d'intégration | PHPUnit + BDD test | Avant chaque release | 100% succès | 
+| Tests end-to-end | Selenium / Cypress | Sprint review | Scénarios critiques OK | 
+| Tests de charge | Apache JMeter | Sprint 10 | 100 req/sec sans erreur | 
+| Tests de sécurité | OWASP ZAP | Sprint 10 | Aucune vulnérabilité critique | 
+11.2 Jeu de tests fonctionnels (extrait) 
+| ID | Cas de test | Résultat attendu | 
+|----|-------------|------------------| 
+| TC-001 | Création article avec PA=10000 | PV TTC = 15340 (10000×1,30×1,18) | 
+| TC-002 | Marge modifiée manuellement | Blocage, valeur forcée à 30% | 
+| TC-003 | Client pro sans IFU | Impossible de créer facture | 
+| TC-004 | Devis avec remise 10% | Net commercial = HT brut × 0,9 | 
+| TC-005 | Transformation devis→facture | Copie intégrale + génération PDF | 
+| TC-006 | Certification DGI réussie | Statut "certifiee", QR Code généré | 
+| TC-007 | API DGI indisponible | File attente, réessai automatique | 
+| TC-008 | Rupture de stock signalée | Ticker notifié à tous commerciaux | 
+11.3 Critères de validation de recette 
+La recette est validée par YAOCOM'S GROUPE lorsque : 
+1. 100% des cas de tests critiques sont passés avec succès 
+2. Les performances sont conformes (temps de réponse < 2s) 
+3. La certification DGI fonctionne sur au moins 10 factures consécutives 
+4. Le mode dégradé a été testé (simulation panne DGI) 
+5. La documentation utilisateur est complète et approuvée 
+6. La formation a été dispensée à au moins 80% des utilisateurs finaux --- 
+12. MAINTENANCE ET ÉVOLUTIONS PRÉVISIONNELLES 
+12.1 Maintenance courante (post-livraison) 
+| Service | Fréquence | Description | 
+|---------|-----------|-------------| 
+| Support utilisateur | Jours ouvrés | Assistance par email/téléphone (4h max réponse) | 
+| Correctifs bugs | Sous 48h | Patchs pour anomalies bloquantes | 
+| Sauvegardes BDD | Quotidienne | Automatisée via cron | 
+| Surveillance logs | Hebdomadaire | Analyse des erreurs, optimisation | 
+12.2 Évolutions prévues (V3.0 – T4 2026) 
+| Fonctionnalité | Description | Complexité | 
+|----------------|-------------|------------| 
+| Multi-devises | Euro, Dollar, CFA avec taux auto | Élevée | 
+| Relances automatisées | Emails aux clients échus | Moyenne | 
+| Interfaçage direct DGI | Certificat push vers FNE | Élevée | 
+| Mobile app | Version React Native pour commerciaux | Élevée | 
+| E-commerce | Catalogue public + paiement intégré | Très élevée | 
+| API REST publique | Pour connecter des outils tiers | Élevée | 
+12.3 Budget maintenance annuelle (estimation) 
+| Poste | Coût annuel (FCFA) | 
+|-------|--------------------| 
+| Hébergement PlanetHoster (formule pro) | 360 000 | 
+| Nom de domaine (winterp.ci) | 15 000 | 
+| Certificat SSL | Inclus | 
+| Support technique (forfait 20h/mois) | 1 200 000 | 
+| Correctifs et évolutions mineures | 800 000 | 
+| Total estimatif | 2 375 000 FCFA | --- 
+13. ANNEXES TECHNIQUES 
+13.1 Glossaire des termes 
+| Terme | Définition | 
+|-------|-------------| 
+| API | Interface de programmation permettant l'échange de données | 
+| DGI | Direction Générale des Impôts de Côte d'Ivoire | 
+| ERP | Enterprise Resource Planning (progiciel de gestion intégré) | 
+| FNE | Facture Normalisée Électronique (norme DGI) | 
+| IFU | Identifiant Fiscal Unique | 
+| OHADA | Organisation pour l'Harmonisation en Afrique du Droit des Affaires | 
+| SAE | Système d'Archivage Électronique | 
+| SAD | Système d'Aide à la Décision | 
+| Ticker | Bandeau défilant d'informations temps réel | 
+13.2 Références normatives - Loi n°2020-xxx relative à la généralisation de la facture électronique en Côte d'Ivoire - Acte uniforme OHADA sur le droit comptable - Règlement DGI n°001/2025 relatif aux spécifications techniques de l'API FNE - Norme ISO 27001 (sécurité de l'information) – applicable partiellement 
+13.3 Liste des abréviations 
+| Abréviation | Signification | 
+|-------------|---------------| 
+| AJAX | Asynchronous JavaScript and XML | 
+| BDD | Base de Données | 
+| CLI | Command Line Interface | 
+| CRUD | Create, Read, Update, Delete | 
+| CSRF | Cross-Site Request Forgery | 
+| CSS | Cascading Style Sheets | 
+| HTML | HyperText Markup Language | 
+| JSON | JavaScript Object Notation | 
+| KPI | Key Performance Indicator | 
+| MVC | Modèle-Vue-Contrôleur | 
+| PDO | PHP Data Objects | 
+| PSR | PHP Standard Recommendation | 
+| QA | Quality Assurance | 
+| SAE | Système d'Archivage Électronique | 
+| SQL | Structured Query Language | 
+| TVA | Taxe sur la Valeur Ajoutée | 
+| WCAG | Web Content Accessibility Guidelines | 
+13.4 Matrice de traçabilité des exigences 
+| ID Exigence | Description | Module | Sprint | 
+|-------------|-------------|--------|--------| 
+| EX-001 | Marge automatique 30% | ATIC | 3 | 
+| EX-002 | Cascade financière Sage 100 | Commercial | 5 | 
+| EX-003 | Certification DGI automatique | DGI/FNE | 7 | 
+| EX-004 | Génération QR Code | DGI/FNE | 7 | 
+| EX-005 | Assistant IA GIA | IA | 9 | 
+| EX-006 | Archivage électronique 10 ans | SAE | 6 | 
+| EX-007 | Interface magasinier picking | Logistique | 8 | 
+| EX-008 | KPI et reporting | Reporting | 9 | 
+| EX-009 | Ticker temps réel | UI | 2 | 
+| EX-010 | Glassmorphism et charte Elite | UI | 2 | --- 
+SIGNATURES ET VALIDATIONS 
+| Fonction | Nom | Signature | Date | 
+|----------|-----|-----------|------| 
+| Product Owner (YAOCOM'S) | ................... | ................... | ..../..../2026 | 
+| Directeur Technique | ................... | ................... | ..../..../2026 | 
+| Chef de Projet | ................... | ................... | ..../..../2026 | --- 
+Document établi par : Architecture & Stratégie Digitale   
+Date de validité : 13 Avril 2026 – 31 Décembre 2026   
+Version du document : 2.5.0 – FINAL   
+*Fin du cahier des charges – WinTech ERP V2.5 Édition GIA* --- 
+*Ce document constitue l'intégralité des spécifications contractuelles pour le 
+développement et la livraison de WinTech ERP V2.5. Toute modification doit faire l'objet 
+d'un avenant signé par les deux parties.*
