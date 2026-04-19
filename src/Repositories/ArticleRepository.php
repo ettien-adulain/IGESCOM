@@ -21,9 +21,37 @@ class ArticleRepository
 {
     private $db;
 
+    /** @var bool|null Cache par requête : colonne articles.actif présente */
+    private ?bool $hasActifColumn = null;
+
     public function __construct()
     {
         $this->db = Connection::getInstance();
+    }
+
+    private function articlesHasActifColumn(): bool
+    {
+        if ($this->hasActifColumn !== null) {
+            return $this->hasActifColumn;
+        }
+        try {
+            $q = $this->db->query("SHOW COLUMNS FROM `articles` LIKE 'actif'");
+            $this->hasActifColumn = (bool) $q->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $this->hasActifColumn = false;
+        }
+        return $this->hasActifColumn;
+    }
+
+    /**
+     * Filtre articles actifs à la caisse / ventes / API (pas pour l’écran catalogue).
+     */
+    private function sqlActiveArticleClause(string $alias = 'a'): string
+    {
+        if (!$this->articlesHasActifColumn()) {
+            return '';
+        }
+        return " AND IFNULL({$alias}.actif, 1) = 1";
     }
 
     /**
@@ -48,10 +76,9 @@ class ArticleRepository
      */
 
     /**
-     * RÉCUPÉRATION GLOBALE DU CATALOGUE
-     * Cible : Affichage des 300 articles avec bénéfices auto-calculés
-     * 
-     * @return array Tableau d'objets ou tableaux associatifs
+     * RÉCUPÉRATION GLOBALE DU CATALOGUE (back-office)
+     * Inclut les articles désactivés pour la caisse : ils restent visibles ici avec indicateur UI.
+     * Pour la caisse / devis / API, utiliser searchLive() ou searchAtic() qui filtrent sur actif.
      */
     public function getAllATIC(): array
     {
@@ -131,6 +158,81 @@ class ArticleRepository
     }
 
     /**
+     * Mise à jour catalogue ATIC (fiche article).
+     * Ne pas mettre à jour prix_vente_revient / benefice_unitaire si ce sont des colonnes GENERATED en MySQL.
+     */
+    public function updateAtic(int $id, array $data): void
+    {
+        $desc = trim((string)($data['description'] ?? ''));
+        if ($desc === '') {
+            $desc = trim((string)($data['fiche_technique'] ?? ''));
+        }
+        if ($desc === '') {
+            $desc = trim((string)($data['designation'] ?? ''));
+        }
+        $fiche = trim((string)($data['fiche_technique'] ?? ''));
+        if ($fiche === '') {
+            $fiche = $desc;
+        }
+
+        try {
+            $sql = "UPDATE articles SET
+                designation = :des,
+                description = :rem,
+                fiche_technique = :fiche,
+                type_article = :type,
+                prix_achat = :achat,
+                marge_pourcentage = :marge,
+                stock_alerte = :alerte,
+                photo = :photo,
+                id_categorie = :cat
+                WHERE id = :id";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                'des'   => strtoupper((string)$data['designation']),
+                'rem'   => $desc,
+                'fiche' => $fiche,
+                'type'  => $data['type_article'],
+                'achat' => (float)$data['prix_achat'],
+                'marge' => 30.00,
+                'alerte'=> (int)($data['stock_alerte'] ?? 5),
+                'photo' => $data['photo'] ?? 'atic/default_item.png',
+                'cat'   => (int)($data['id_categorie'] ?? 1),
+                'id'    => $id,
+            ]);
+        } catch (Exception $e) {
+            Logger::log("DB_UPDATE_ATIC_FAIL", $e->getMessage());
+            throw new Exception("Erreur de mise à jour article : " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Active ou désactive un article (nécessite la colonne actif — voir database/migrations).
+     */
+    public function setArticleActif(int $id, bool $active): bool
+    {
+        if (!$this->articlesHasActifColumn()) {
+            return false;
+        }
+        try {
+            $st = $this->db->prepare("UPDATE articles SET actif = ? WHERE id = ?");
+            return $st->execute([(int) $active, $id]);
+        } catch (Exception $e) {
+            Logger::log("ARTICLE_SET_ACTIF_FAIL", $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Alias pour l’API AJAX (facturation / devis).
+     */
+    public function searchAtic(string $term, ?string $type = null): array
+    {
+        return $this->searchLive($term, $type);
+    }
+
+    /**
      * ============================================================
      * MODULE 2.2 : MOTEUR DE RECHERCHE INTELLIGENT (AJAX)
      * ============================================================
@@ -138,7 +240,7 @@ class ArticleRepository
 
     /**
      * RECHERCHE LIVE (Autocomplete dès la 1ère lettre)
-     * Cible : Saisie de facturation et devis.
+     * Cible : caisse, facturation et devis — articles désactivés exclus.
      * 
      * @param string $term Le texte saisi par l'agent
      * @param string|null $type Optionnel : Filtrer par INFO, BIO, etc.
@@ -151,6 +253,10 @@ class ArticleRepository
                     WHERE (designation LIKE :t OR reference_atic LIKE :t)";
             
             $params = ['t' => "%$term%"];
+
+            if ($this->articlesHasActifColumn()) {
+                $sql .= " AND IFNULL(actif, 1) = 1";
+            }
 
             if ($type) {
                 $sql .= " AND type_article = :type";

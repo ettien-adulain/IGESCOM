@@ -1,7 +1,30 @@
 <?php
 use App\Utils\Formatter;
+
+$role = $_SESSION['user_role'] ?? '';
+$isAdmin = in_array($role, ['ADMIN', 'SUPERADMIN'], true);
+$isInactive = array_key_exists('actif', $article ?? []) && (int) ($article['actif'] ?? 1) === 0;
+$flashOk = $_GET['success'] ?? '';
+$flashErr = $_GET['error'] ?? '';
 ?>
 <div class="p-4 animate-up">
+    <?php if ($flashOk === 'modifie'): ?>
+        <div class="alert alert-success rounded-3 mb-3 py-2"><i class="fas fa-check-circle me-2"></i> Article mis à jour.</div>
+    <?php elseif ($flashOk === 'statut'): ?>
+        <div class="alert alert-success rounded-3 mb-3 py-2"><i class="fas fa-check-circle me-2"></i> Statut catalogue enregistré.</div>
+    <?php endif; ?>
+    <?php if ($flashErr === 'actif_sql'): ?>
+        <div class="alert alert-warning rounded-3 mb-3 py-2">
+            <i class="fas fa-database me-2"></i> La désactivation nécessite la colonne <code>actif</code> en base. Exécutez le script <code>database/migrations/001_articles_actif.sql</code> puis réessayez.
+        </div>
+    <?php endif; ?>
+
+    <?php if ($isInactive): ?>
+        <div class="alert alert-secondary border-2 mb-3 rounded-3">
+            <i class="fas fa-eye-slash me-2"></i> <strong>Article désactivé</strong> — il n'apparaît plus dans le catalogue ni dans les recherches pour les ventes.
+        </div>
+    <?php endif; ?>
+
     <!-- BARRE D'OUTILS SUPÉRIEURE (SOPHISTIQUÉE) -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <nav aria-label="breadcrumb">
@@ -10,10 +33,13 @@ use App\Utils\Formatter;
                 <li class="breadcrumb-item active text-danger fw-bold" aria-current="page"><?= $article['reference_atic'] ?></li>
             </ol>
         </nav>
-        <div class="d-flex gap-2">
-            <button class="btn btn-outline-dark btn-sm fw-bold px-3 border-2" onclick="window.print()">
-                <i class="fas fa-print me-1 text-danger"></i> IMPRIMER FICHE
-            </button>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <?php if ($isAdmin): ?>
+                <a href="<?= $base_url ?>/catalog/edit/<?= (int)$article['id'] ?>" class="btn btn-warning btn-sm fw-bold px-3 rounded-pill">
+                    <i class="fas fa-edit me-1"></i> MODIFIER
+                </a>
+            <?php endif; ?>
+          
             <a href="<?= $base_url ?>/catalog" class="btn btn-dark btn-sm fw-bold px-4 shadow-sm rounded-pill">
                 <i class="fas fa-arrow-left me-1"></i> RETOUR
             </a>
@@ -99,11 +125,29 @@ use App\Utils\Formatter;
                 </div>
                 
                 <!-- ACTIONS CONTEXTUELLES -->
-                <div class="mt-4 d-flex gap-3">
-                    <button class="btn btn-dark fw-bold px-4 rounded-pill shadow-sm">
-                        <i class="fas fa-edit me-2 text-warning"></i> MODIFIER LES DONNÉES
-                    </button>
-                    <button class="btn btn-outline-danger fw-bold px-4 rounded-pill">
+                <div class="mt-4 d-flex flex-wrap gap-3 align-items-center">
+                    <?php if ($isAdmin): ?>
+                        <a href="<?= $base_url ?>/catalog/edit/<?= (int)$article['id'] ?>" class="btn btn-dark fw-bold px-4 rounded-pill shadow-sm">
+                            <i class="fas fa-edit me-2 text-warning"></i> MODIFIER LES DONNÉES
+                        </a>
+                        <?php if (!$isInactive): ?>
+                            <form method="post" action="<?= $base_url ?>/catalog/set-active/<?= (int)$article['id'] ?>" class="d-inline"
+                                  onsubmit="return confirm('Désactiver cet article ? Il disparaîtra du catalogue.');">
+                                <input type="hidden" name="actif" value="0">
+                                <button type="submit" class="btn btn-outline-secondary fw-bold px-4 rounded-pill">
+                                    <i class="fas fa-ban me-2"></i> DÉSACTIVER
+                                </button>
+                            </form>
+                        <?php else: ?>
+                            <form method="post" action="<?= $base_url ?>/catalog/set-active/<?= (int)$article['id'] ?>" class="d-inline">
+                                <input type="hidden" name="actif" value="1">
+                                <button type="submit" class="btn btn-success fw-bold px-4 rounded-pill">
+                                    <i class="fas fa-check me-2"></i> RÉACTIVER
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <button type="button" class="btn btn-outline-danger fw-bold px-4 rounded-pill" disabled title="À venir">
                         <i class="fas fa-history me-2"></i> HISTORIQUE DE VENTE
                     </button>
                 </div>
