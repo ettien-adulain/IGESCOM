@@ -53,4 +53,21 @@ class Formatter {
         $class = $colors[$status] ?? 'bg-secondary';
         return "<span class='badge $class px-3 rounded-pill' style='font-size: 0.65rem;'>$status</span>";
     }
+
+    /**
+     * URL publique pour la photo catalogue ATIC.
+     * Uploader renvoie déjà "uploads/..." ; les défauts sont sous "uploads" sans ce préfixe (ex. atic/default_item.png).
+     */
+    public static function articlePhotoUrl(string $baseUrl, ?string $storedPath): string {
+        $storedPath = trim((string) $storedPath);
+        $baseUrl = rtrim($baseUrl, '/');
+        if ($storedPath === '') {
+            return $baseUrl . '/assets/img/static/atic_default.png';
+        }
+        $storedPath = str_replace('\\', '/', $storedPath);
+        if (str_starts_with($storedPath, 'uploads/')) {
+            return $baseUrl . '/' . $storedPath;
+        }
+        return $baseUrl . '/uploads/' . ltrim($storedPath, '/');
+    }
 }

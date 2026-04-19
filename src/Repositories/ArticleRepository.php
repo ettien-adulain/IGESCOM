@@ -97,12 +97,25 @@ class ArticleRepository
                         type_article, prix_achat, marge_pourcentage, photo, id_categorie
                     ) VALUES (:ref, :des, :rem, :fiche, :type, :achat, :marge, :photo, :cat)";
 
+            // description en BDD souvent NOT NULL : jamais envoyer NULL (formulaire n'a pas toujours le champ "description")
+            $desc = trim((string)($data['description'] ?? ''));
+            if ($desc === '') {
+                $desc = trim((string)($data['fiche_technique'] ?? ''));
+            }
+            if ($desc === '') {
+                $desc = trim((string)($data['designation'] ?? ''));
+            }
+            $fiche = trim((string)($data['fiche_technique'] ?? ''));
+            if ($fiche === '') {
+                $fiche = $desc;
+            }
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'ref'   => $data['reference_atic'],
                 'des'   => strtoupper($data['designation']),
-                'rem'   => $data['description'] ?? null,
-                'fiche' => $data['fiche_technique'] ?? null,
+                'rem'   => $desc,
+                'fiche' => $fiche,
                 'type'  => $data['type_article'],
                 'achat' => (float)$data['prix_achat'],
                 'marge' => 30.00, // Forcé par le cahier des charges

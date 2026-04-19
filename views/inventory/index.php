@@ -253,8 +253,8 @@ $activeAgId = $_SESSION['agence_id'] ?? 1;
 
             <!-- Image Zone -->
             <div class="atic-image-zone">
-                <img src="<?= $base_url ?>/uploads/articles/<?= $a['photo'] ?>" 
-                     onerror="this.src='<?= $base_url ?>/assets/img/static/atic_placeholder.png'">
+                <img src="<?= htmlspecialchars(Formatter::articlePhotoUrl($base_url, $a['photo'] ?? null)) ?>" 
+                     onerror="this.onerror=null;this.src='<?= htmlspecialchars($base_url) ?>/assets/img/static/atic_placeholder.png'">
             </div>
 
             <!-- Info Zone -->

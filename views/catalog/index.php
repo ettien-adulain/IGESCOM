@@ -5,6 +5,8 @@
  * Intelligence : Moteur de filtrage instantané & Calcul de rentabilité Sage 100
  */
 
+use App\Utils\Formatter;
+
 // Initialisation sécurisée
 $articles = $articles ?? [];
 $active = 'catalog';
@@ -247,8 +249,8 @@ $title = "Catalogue ATIC - Référentiel Élite";
 
                 <!-- Image -->
                 <div class="img-wrapper">
-                    <img src="<?= $base_url ?>/uploads/<?= $a['photo'] ?>" 
-                         onerror="this.src='<?= $base_url ?>/assets/img/static/atic_default.png'">
+                    <img src="<?= htmlspecialchars(Formatter::articlePhotoUrl($base_url, $a['photo'] ?? null)) ?>" 
+                         onerror="this.onerror=null;this.src='<?= htmlspecialchars($base_url) ?>/assets/img/static/atic_default.png'">
                     <div class="type-badge"><?= $a['type_article'] ?></div>
                 </div>
 
