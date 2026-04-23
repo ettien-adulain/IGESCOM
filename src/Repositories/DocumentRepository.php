@@ -137,6 +137,28 @@ class DocumentRepository
     }
 
     /**
+     * Historique commercial d'un client (dossier tiers).
+     */
+    public function getAllDocumentsByClient(int $clientId): array
+    {
+        try {
+            $sql = "SELECT d.*, u.nom_complet AS auteur_nom
+                    FROM documents d
+                    LEFT JOIN utilisateurs u ON d.id_auteur = u.id
+                    WHERE d.id_client = :cid
+                    ORDER BY d.date_creation DESC";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['cid' => $clientId]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            Logger::log("SQL_DOCS_BY_CLIENT", $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * RÉCUPÉRATION COMPLÈTE : Pour le moteur PDF (DocumentService)
      */
     public function findWithDetails(int $id): ?array

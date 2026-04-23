@@ -2,11 +2,16 @@
 // Initialisation des variables de structure
 $active = $active ?? 'clients';
 $page_title = "Création Fiche Tiers";
+$flashErr = isset($_GET['error']) ? (string) $_GET['error'] : '';
 ?>
 
 <div class="p-4 animate-up">
     <!-- FIL D'ARIANE & TITRE -->
     <nav class="small text-muted mb-2">Gestion / Répertoire Tiers / <span class="text-danger fw-bold">Nouveau Client</span></nav>
+
+    <?php if ($flashErr !== ''): ?>
+        <div class="alert alert-danger rounded-3 mb-3 py-2 small"><?= htmlspecialchars(urldecode($flashErr), ENT_QUOTES, 'UTF-8') ?></div>
+    <?php endif; ?>
     
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-dark m-0">FICHE SIGNALÉTIQUE TIERS</h2>
@@ -126,7 +131,7 @@ $page_title = "Création Fiche Tiers";
                             <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 text-uppercase small">Gestion des Risques (Sage)</h6>
                             <div class="mb-3">
                                 <label class="extra-small fw-bold text-muted uppercase">Plafond de Solvabilité (FCFA)</label>
-                                <input type="number" name="solvabilite_max" class="form-control bg-danger bg-opacity-10 border-0 fw-bold text-danger" value="0">
+                                <input type="number" name="plafond_credit" class="form-control bg-danger bg-opacity-10 border-0 fw-bold text-danger" value="0">
                                 <small class="text-muted italic extra-small">Blocage auto si encours > plafond</small>
                             </div>
                             <div class="mb-0">
