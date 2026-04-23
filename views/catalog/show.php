@@ -1,3 +1,6 @@
+<?php
+use App\Utils\Formatter;
+?>
 <div class="p-4 animate-up">
     <!-- BARRE D'OUTILS SUPÉRIEURE (SOPHISTIQUÉE) -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -22,8 +25,8 @@
         <div class="col-lg-4">
             <div class="hub-card bg-white shadow-sm border-0 p-0 overflow-hidden" style="border-radius: 20px;">
                 <div class="p-5 bg-light text-center border-bottom">
-                    <img src="<?= $base_url ?>/uploads/<?= $article['photo'] ?>" 
-                         onerror="this.src='<?= $base_url ?>/assets/img/static/atic_default.png'" 
+                    <img src="<?= htmlspecialchars(Formatter::articlePhotoUrl($base_url, $article['photo'] ?? null)) ?>" 
+                         onerror="this.onerror=null;this.src='<?= htmlspecialchars($base_url) ?>/assets/img/static/atic_default.png'" 
                          class="img-fluid rounded" style="max-height: 280px; mix-blend-mode: multiply;">
                 </div>
                 <div class="p-4">
