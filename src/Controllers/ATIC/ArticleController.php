@@ -3,7 +3,6 @@ namespace App\Controllers\ATIC;
 
 use App\Controllers\Controller;
 use App\Repositories\ArticleRepository;
-use App\Services\CalculationService;
 use App\Utils\Logger;
 use App\Utils\Uploader;
 use Exception;
@@ -35,6 +34,8 @@ class ArticleController extends Controller {
             // Récupération de tous les articles avec calcul de bénéfice SQL
             $articles = $this->articleRepo->getAllATIC();
 
+            $categories = $this->db->query("SELECT id, libelle FROM categories ORDER BY libelle ASC")->fetchAll(\PDO::FETCH_ASSOC);
+
             // Statistiques pour le bandeau du haut
             $stats = [
                 'total' => count($articles),
@@ -48,6 +49,7 @@ class ArticleController extends Controller {
                 'page_title' => 'Référentiel des Articles',
                 'active'     => 'catalog',
                 'articles'   => $articles,
+                'categories' => $categories,
                 'stats'      => $stats
             ]);
 
@@ -144,6 +146,99 @@ class ArticleController extends Controller {
         } catch (Exception $e) {
             $this->redirect('/catalog?error=fiche_introuvable');
         }
+    }
+
+    /**
+     * Formulaire de modification (ADMIN)
+     */
+    public function edit($id) {
+        $this->middleware(['ADMIN', 'SUPERADMIN']);
+        $article = $this->articleRepo->getById((int) $id);
+        if (!$article) {
+            $this->redirect('/catalog?error=fiche_introuvable');
+            return;
+        }
+        $categories = $this->db->query("SELECT * FROM categories ORDER BY libelle ASC")->fetchAll();
+
+        $this->render('catalog/edit', [
+            'page_title' => 'Modifier un article ATIC',
+            'active'     => 'catalog',
+            'article'    => $article,
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Enregistrement des modifications
+     */
+    public function update() {
+        $this->middleware(['ADMIN', 'SUPERADMIN']);
+        if (!$this->request->isPost()) {
+            $this->redirect('/catalog');
+            return;
+        }
+        $data = $this->request->all();
+        $id = (int) ($data['id'] ?? 0);
+        $photo = $_FILES['photo'] ?? null;
+
+        try {
+            if ($id < 1) {
+                throw new Exception("Article invalide.");
+            }
+            $existing = $this->articleRepo->getById($id);
+            if (!$existing) {
+                throw new Exception("Article introuvable.");
+            }
+            if (trim((string) ($data['designation'] ?? '')) === '') {
+                throw new Exception("Veuillez renseigner la désignation.");
+            }
+            if (!array_key_exists('prix_achat', $data) || $data['prix_achat'] === '') {
+                throw new Exception("Veuillez renseigner le prix d'achat.");
+            }
+
+            $photoPath = $existing['photo'] ?? 'atic/default_item.png';
+            if ($photo && $photo['error'] === UPLOAD_ERR_OK) {
+                $photoPath = Uploader::upload($photo, 'articles/atic');
+            }
+
+            $articleData = [
+                'designation'     => strtoupper(strip_tags($data['designation'])),
+                'type_article'    => $data['type_article'] ?? 'INFO',
+                'prix_achat'      => (float) $data['prix_achat'],
+                'stock_alerte'    => (int) ($data['stock_alerte'] ?? 5),
+                'fiche_technique' => $data['fiche_technique'] ?? '',
+                'photo'           => $photoPath,
+                'id_categorie'    => (int) ($data['id_categorie'] ?? 1),
+            ];
+
+            $this->articleRepo->updateAtic($id, $articleData);
+            Logger::log("ATIC_UPDATE", "Article ID $id modifié");
+
+            $this->redirect('/catalog/show/' . $id . '?success=modifie');
+        } catch (Exception $e) {
+            Logger::log("ATIC_UPDATE_ERROR", $e->getMessage());
+            $target = $id > 0 ? '/catalog/edit/' . $id : '/catalog';
+            $this->redirect($target . '?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    /**
+     * Active / désactive un article (colonne actif — exécuter la migration SQL si besoin)
+     */
+    public function setActive($id) {
+        $this->middleware(['ADMIN', 'SUPERADMIN']);
+        if (!$this->request->isPost()) {
+            $this->redirect('/catalog/show/' . (int) $id);
+            return;
+        }
+        $actif = (int) $this->request->input('actif', 1) === 1;
+        $ok = $this->articleRepo->setArticleActif((int) $id, $actif);
+        if (!$ok) {
+            $this->redirect('/catalog/show/' . (int) $id . '?error=actif_sql');
+            return;
+        }
+        Logger::log("ATIC_ACTIF", 'Article ID ' . (int) $id . ' actif=' . ($actif ? '1' : '0'));
+        $this->redirect('/catalog/show/' . (int) $id . '?success=statut');
     }
 
     /**

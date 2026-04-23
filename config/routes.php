@@ -51,6 +51,9 @@ return [
     '/catalog'                  => ['controller' => 'ATIC\Article', 'action' => 'index', 'role' => 'USER'],
     '/catalog/create'           => ['controller' => 'ATIC\Article', 'action' => 'create', 'role' => 'ADMIN'],
     '/catalog/save'             => ['controller' => 'ATIC\Article', 'action' => 'save', 'role' => 'ADMIN'],
+    '/catalog/edit/{id}'        => ['controller' => 'ATIC\Article', 'action' => 'edit', 'role' => 'ADMIN'],
+    '/catalog/update'           => ['controller' => 'ATIC\Article', 'action' => 'update', 'role' => 'ADMIN'],
+    '/catalog/set-active/{id}'  => ['controller' => 'ATIC\Article', 'action' => 'setActive', 'role' => 'ADMIN'],
     '/catalog/show/{id}'        => ['controller' => 'ATIC\Article', 'action' => 'show', 'role' => 'USER'],
     '/catalog/margin-calc'      => ['controller' => 'ATIC\Article', 'action' => 'calculator', 'role' => 'USER'], // Marge 30%
 
