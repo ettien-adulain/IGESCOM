@@ -16,9 +16,65 @@ class ClientRepository
 {
     private $db;
 
+    /** @var array<string, true>|null Cache SHOW COLUMNS clients */
+    private ?array $clientsColNames = null;
+
     public function __construct()
     {
         $this->db = Connection::getInstance();
+    }
+
+    private function clientHasColumn(string $name): bool
+    {
+        if ($this->clientsColNames === null) {
+            $this->clientsColNames = [];
+            try {
+                $q = $this->db->query('SHOW COLUMNS FROM `clients`');
+                while ($row = $q->fetch(PDO::FETCH_ASSOC)) {
+                    $this->clientsColNames[$row['Field']] = true;
+                }
+            } catch (Exception $e) {
+                Logger::log('CLIENT_COL_CACHE', $e->getMessage());
+            }
+        }
+
+        return isset($this->clientsColNames[$name]);
+    }
+
+    /** Colonne fichier logo en base (les schémas varient : logo_path, logo, photo_logo). */
+    private function pickLogoColumn(): ?string
+    {
+        foreach (['logo_path', 'logo', 'photo_logo'] as $c) {
+            if ($this->clientHasColumn($c)) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
+
+    /** Plafond / encours max autorisé (solvabilite_max, plafond_credit, etc.). */
+    private function pickCreditColumn(): ?string
+    {
+        foreach (['solvabilite_max', 'plafond_credit', 'encours_max'] as $c) {
+            if ($this->clientHasColumn($c)) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
+
+    /** Colonne rattachement agence (schémas multi-sites). */
+    private function pickAgenceColumn(): ?string
+    {
+        foreach (['id_agence', 'agence_id', 'id_agence_client', 'idagence', 'idAgence'] as $c) {
+            if ($this->clientHasColumn($c)) {
+                return $c;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -49,9 +105,10 @@ class ClientRepository
                     FROM clients c";
             
             $params = [];
-            // Si l'utilisateur n'est pas SUPERADMIN, on filtre par agence
-            if ($agenceId !== null && $_SESSION['user_role'] !== 'SUPERADMIN') {
-                $sql .= " WHERE c.id_agence = :ag";
+            $agenceCol = $this->pickAgenceColumn();
+            if ($agenceId !== null && ($agenceCol !== null) && ($_SESSION['user_role'] ?? '') !== 'SUPERADMIN') {
+                $agSafe = str_replace('`', '``', $agenceCol);
+                $sql .= ' WHERE c.`' . $agSafe . '` = :ag';
                 $params['ag'] = $agenceId;
             }
 
@@ -94,7 +151,7 @@ class ClientRepository
     public function save(array $data): array
     {
         try {
-            $this->db->beginTransaction();
+            // Pas de beginTransaction ici : le contrôleur peut déjà envelopper la requête (évite imbrication PDO).
 
             // 1. Vérification Anti-Doublon (Téléphone)
             $check = $this->db->prepare("SELECT id FROM clients WHERE telephone = ? AND id != ?");
@@ -105,55 +162,88 @@ class ClientRepository
 
             $isUpdate = isset($data['id']) && !empty($data['id']);
 
+            $creditCol = $this->pickCreditColumn();
+            $logoCol = $this->pickLogoColumn();
+            $agenceCol = $this->pickAgenceColumn();
+
+            $creditVal = (float) ($data['plafond_credit'] ?? $data['solvabilite_max'] ?? 0);
+            $logoVal = $data['logo_path'] ?? 'default_client.png';
+
             if ($isUpdate) {
-                // LOGIQUE UPDATE
-                $sql = "UPDATE clients SET 
-                            nom_prenom = :nom, email = :email, telephone = :tel, 
-                            adresse_complete = :adr, type_client = :type, 
-                            nom_magasin = :mag, localisation_magasin = :loc,
-                            solvabilite_max = :solv, logo_path = :logo
-                        WHERE id = :id";
+                $sets = [
+                    'nom_prenom = :nom',
+                    'email = :email',
+                    'telephone = :tel',
+                    'adresse_complete = :adr',
+                    'type_client = :type',
+                    'nom_magasin = :mag',
+                    'localisation_magasin = :loc',
+                ];
+                if ($creditCol !== null) {
+                    $sets[] = '`' . $creditCol . '` = :solv';
+                }
+                if ($logoCol !== null) {
+                    $sets[] = '`' . $logoCol . '` = :logo';
+                }
+                $sql = 'UPDATE clients SET ' . implode(', ', $sets) . ' WHERE id = :id';
             } else {
-                // LOGIQUE INSERT
-                $sql = "INSERT INTO clients (
-                            id_unique_client, nom_prenom, email, telephone, 
-                            adresse_complete, type_client, nom_magasin, 
-                            localisation_magasin, solvabilite_max, logo_path, id_agence
-                        ) VALUES (
-                            :uid, :nom, :email, :tel, :adr, :type, :mag, :loc, :solv, :logo, :ag
-                        )";
-                // Génération ID Unique CLI-XXXX
-                $data['uid'] = 'CLI-' . strtoupper(substr(uniqid(), -5));
+                $cols = [
+                    'id_unique_client', 'nom_prenom', 'email', 'telephone',
+                    'adresse_complete', 'type_client', 'nom_magasin',
+                    'localisation_magasin',
+                ];
+                $ph = [':uid', ':nom', ':email', ':tel', ':adr', ':type', ':mag', ':loc'];
+                if ($creditCol !== null) {
+                    $cols[] = $creditCol;
+                    $ph[] = ':solv';
+                }
+                if ($logoCol !== null) {
+                    $cols[] = $logoCol;
+                    $ph[] = ':logo';
+                }
+                if ($agenceCol !== null) {
+                    $cols[] = $agenceCol;
+                    $ph[] = ':ag';
+                }
+
+                $uid = trim((string) ($data['id_unique_client'] ?? ''));
+                $data['uid'] = $uid !== '' ? strtoupper($uid) : ('CLI-' . strtoupper(substr(uniqid(), -5)));
+
+                $sql = 'INSERT INTO clients (`' . implode('`, `', $cols) . '`) VALUES (' . implode(', ', $ph) . ')';
             }
 
             $stmt = $this->db->prepare($sql);
             $params = [
                 'nom'   => strtoupper(strip_tags($data['nom_prenom'])),
-                'email' => filter_var($data['email'], FILTER_SANITIZE_EMAIL),
+                'email' => filter_var($data['email'] ?? '', FILTER_SANITIZE_EMAIL),
                 'tel'   => preg_replace('/[^0-9+]/', '', $data['telephone']),
                 'adr'   => strip_tags($data['adresse_complete'] ?? ''),
                 'type'  => $data['type_client'] ?? 'PARTICULIER',
-                'mag'   => ($data['type_client'] === 'PROFESSIONNEL') ? strtoupper(strip_tags($data['nom_magasin'])) : null,
+                'mag'   => ($data['type_client'] === 'PROFESSIONNEL') ? strtoupper(strip_tags($data['nom_magasin'] ?? '')) : null,
                 'loc'   => strip_tags($data['localisation_magasin'] ?? ''),
-                'solv'  => (float)($data['solvabilite_max'] ?? 0),
-                'logo'  => $data['logo_path'] ?? 'default_client.png'
             ];
+            if ($creditCol !== null) {
+                $params['solv'] = $creditVal;
+            }
+            if ($logoCol !== null) {
+                $params['logo'] = $logoVal;
+            }
 
             if ($isUpdate) {
                 $params['id'] = $data['id'];
             } else {
                 $params['uid'] = $data['uid'];
-                $params['ag'] = $_SESSION['agence_id'] ?? 1;
+                if ($agenceCol !== null) {
+                    $params['ag'] = $_SESSION['agence_id'] ?? 1;
+                }
             }
 
             $stmt->execute($params);
             $finalId = $isUpdate ? (int)$data['id'] : (int)$this->db->lastInsertId();
 
-            $this->db->commit();
             return ['status' => 'success', 'id' => $finalId];
 
         } catch (Exception $e) {
-            if ($this->db->inTransaction()) $this->db->rollBack();
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }

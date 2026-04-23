@@ -58,13 +58,7 @@ $preRef = "REF-X-" . date('Ymd-Hi') . "-" . $userId;
                         </div>
 
                         <!-- Stock Initial (DEMANDÉ) -->
-                        <div class="col-md-6">
-                            <label class="form-label-custom">QUANTITÉ INITIALE ACHETÉE (STOCK)</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-0"><i class="fas fa-warehouse text-muted"></i></span>
-                                <input type="number" name="stock_initial" class="form-control-pro" value="0" min="0">
-                            </div>
-                        </div>
+                        
 
                         <!-- Fiche Technique -->
                         <div class="col-md-12">

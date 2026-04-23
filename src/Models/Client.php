@@ -48,7 +48,10 @@ class Client
         $this->id_unique_client = $data['id_unique_client'] ?? 'CLI-TEMP';
         $this->nom_prenom = $data['nom_prenom'] ?? 'Client Anonyme';
         $this->type_client = $data['type_client'] ?? 'PARTICULIER';
-        $this->logo_path = $data['logo_path'] ?? 'default_client.png';
+        $this->logo_path = $data['logo_path']
+            ?? $data['logo']
+            ?? $data['photo_logo']
+            ?? 'default_client.png';
         $this->nom_magasin = $data['nom_magasin'] ?? null;
         $this->localisation_magasin = $data['localisation_magasin'] ?? null;
 
@@ -56,12 +59,26 @@ class Client
         $this->email = $data['email'] ?? null;
         $this->adresse_complete = $data['adresse_complete'] ?? null;
 
-        $this->solvabilite_max = isset($data['solvabilite_max']) ? (float)$data['solvabilite_max'] : 0.00;
+        if (isset($data['solvabilite_max'])) {
+            $this->solvabilite_max = (float) $data['solvabilite_max'];
+        } elseif (isset($data['plafond_credit'])) {
+            $this->solvabilite_max = (float) $data['plafond_credit'];
+        } elseif (isset($data['encours_max'])) {
+            $this->solvabilite_max = (float) $data['encours_max'];
+        } else {
+            $this->solvabilite_max = 0.00;
+        }
         $this->encours_actuel = isset($data['encours_actuel']) ? (float)$data['encours_actuel'] : 0.00;
         $this->is_blocked = isset($data['is_blocked']) ? (int)$data['is_blocked'] : 0;
         $this->categorie_tarifaire = $data['categorie_tarifaire'] ?? 'DETAIL';
 
-        $this->id_agence = isset($data['id_agence']) ? (int)$data['id_agence'] : null;
+        if (isset($data['id_agence'])) {
+            $this->id_agence = (int) $data['id_agence'];
+        } elseif (isset($data['agence_id'])) {
+            $this->id_agence = (int) $data['agence_id'];
+        } else {
+            $this->id_agence = null;
+        }
         $this->created_at = $data['created_at'] ?? date('Y-m-d H:i:s');
     }
 

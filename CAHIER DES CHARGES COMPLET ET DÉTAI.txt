@@ -24,7 +24,10 @@ développement)
 évolutions-prévisionnelles) 
 13. [ANNEXES TECHNIQUES](13-annexes-techniques) --- 
 1. PRÉSENTATION GÉNÉRALE ET CONTEXTE STRATÉGIQUE 
+
+
 1.1 Contexte et justification du projet 
+
 YAOCOM'S GROUPE, acteur majeur de la distribution de matériel informatique et de 
 solutions numériques en Côte d'Ivoire, fait face à des défis croissants de gestion 
 intégrée de son activité : - Dispersion des outils : Utilisation d'outils bureautiques et de logiciels non 
@@ -34,12 +37,17 @@ Le présent projet vise à déployer WinTech ERP V2.5 Édition GIA, un système 
 d'entreprise nouvelle génération qui automatise l'ensemble de la chaîne commerciale, 
 logistique, RH et comptable, tout en garantissant une conformité fiscale totale avec la 
 Direction Générale des Impôts (DGI) de Côte d'Ivoire. 
+
 1.2 Vision stratégique 
+
 WinTech ERP n'est pas un simple logiciel de saisie. C'est un Système d'Aide à la 
 Décision (SAD) intelligent qui : - Transforme chaque transaction en donnée analytique exploitable - Automatise la cascade financière conformément aux standards Sage 100 Commercial - Garantit une conformité fiscale rigoureuse via l'intégration native DGI/FNE - Assure une traçabilité totale grâce à un Système d'Archivage Électronique (SAE) normé 
 - Anticipe les besoins grâce à un assistant IA contextuel nommé GIA (Gestion Intégrée et 
 Automatisée) 
+
+
 1.3 Valeur ajoutée pour l'entreprise 
+
 | Axe de valeur | Bénéfice mesurable | 
 |---------------|---------------------| 
 | Productivité | Réduction de 70% du temps de saisie commerciale | 
@@ -48,7 +56,9 @@ Automatisée)
 | Visibilité | Pilotage en temps réel via KPI et alertes prédictives | 
 | Traçabilité | Archivage électronique inaltérable conforme à la législation | 
 | Sécurité | Isolation des secrets, requêtes préparées, logs d'audit | 
+
 1.4 Publics cibles et utilisateurs 
+
 Le système est destiné à cinq profils d'utilisateurs distincts : 
 | Profil | Rôle principal | Fonctionnalités clés | 
 |--------|----------------|----------------------| 
@@ -71,7 +81,9 @@ Objectif 2 : Conformité fiscale DGI/FNE - Certification automatique de chaque f
 Objectif 3 : Traçabilité et archivage légal - Archivage électronique de tous les documents (PDF/A) - Nommage normalisé pour contrôle fiscal - Conservation inaltérable sur 10 ans minimum - Horodatage et signature électronique 
 Objectif 4 : Aide à la décision - Tableaux de bord KPI temps réel 
 - Alertes prédictives (baisse de marge, rupture stock, impayés) - Assistant IA GIA accessible en langage naturel 
+
 2.2 Périmètre fonctionnel (inclusions) 
+
 Le projet inclut le développement des modules suivants : 
 | Module | Code | Description | 
 |--------|------|-------------| 
@@ -117,6 +129,7 @@ Exemple : REF-ORD-2025-04-13-1435-42
 | RG-ATIC-02 | Un article ne peut être supprimé s'il apparaît dans un devis/facture | 
 | RG-ATIC-03 | La photo produit est optionnelle mais recommandée | 
 | RG-ATIC-04 | Le stock minimum est configurable par catégorie | 
+
 3.2 Module CRM – Gestion clients 
 3.2.1 Typologie des clients 
 Client Particulier : - Nom, prénom - Email, téléphone, adresse - Ville, pays - Historique des achats 

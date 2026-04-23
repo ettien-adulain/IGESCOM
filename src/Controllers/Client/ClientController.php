@@ -123,35 +123,27 @@ class ClientController extends Controller
         }
 
         try {
-            $this->db->beginTransaction();
-
             // 2. Traitement de l'image (Logo Client)
-            if (isset($_FILES['logo_client']) && $_FILES['logo_client']['error'] === 0) {
-                $photoName = Uploader::upload($_FILES['logo_client'], 'clients');
-                if ($photoName) {
-                    $data['logo_path'] = $photoName;
-                }
+            if (isset($_FILES['logo_client']) && $_FILES['logo_client']['error'] === UPLOAD_ERR_OK) {
+                $data['logo_path'] = Uploader::upload($_FILES['logo_client'], 'clients');
             }
 
             // 3. Normalisation des données avant insertion
             $data['nom_prenom'] = strtoupper($data['nom_prenom']);
             $data['id_agence']  = $_SESSION['agence_id'] ?? 1;
 
-            // 4. Appel au Repository pour la persistance
+            // 4. Persistance (une seule couche transactionnelle côté PDO si besoin futur)
             $result = $this->clientRepo->save($data);
 
             if ($result['status'] === 'success') {
-                // 5. Archivage de l'action (Module 5)
                 Logger::log("CLIENT_SAVE", "Tiers [{$data['nom_prenom']}] enregistré par {$_SESSION['user_nom']}");
-                
-                $this->db->commit();
                 $this->redirect('/clients?success=Données+synchronisées');
-            } else {
-                throw new Exception($result['message']);
             }
 
+            throw new Exception($result['message'] ?? 'Enregistrement impossible.');
+
         } catch (Exception $e) {
-            if ($this->db->inTransaction()) $this->db->rollBack();
+            Logger::log("CLIENT_SAVE_FAIL", $e->getMessage());
             $this->redirect('/clients/create?error=' . urlencode($e->getMessage()));
         }
     }
@@ -176,16 +168,29 @@ class ClientController extends Controller
             $encours = $this->clientRepo->updateEncours($id);
             $client->encours_actuel = $encours;
 
-            // Récupération des documents liés (Ventes/Services)
             $history = $this->docRepo->getAllDocumentsByClient($id);
 
+            $stats = [
+                'total_ca'    => 0.0,
+                'impayes'     => 0.0,
+                'nb_factures' => count($history),
+            ];
+            foreach ($history as $row) {
+                $net = (float) ($row['net_a_payer'] ?? 0);
+                $stats['total_ca'] += $net;
+                if (($row['statut'] ?? '') !== 'FACTURE_VALIDEE') {
+                    $stats['impayes'] += $net;
+                }
+            }
+
             $this->render('clients/history', [
-                'title'      => 'Dossier Tiers : ' . $client->getLabel(),
-                'page_title' => 'Analyse du Compte',
-                'active'     => 'clients',
-                'client'     => $client,
-                'history'    => $history,
-                'formatter'  => new Formatter()
+                'title'       => 'Dossier Tiers : ' . $client->getLabel(),
+                'page_title'  => 'Analyse du Compte',
+                'active'      => 'clients',
+                'client'      => $client,
+                'history'     => $history,
+                'stats'       => $stats,
+                'formatter'   => new Formatter(),
             ]);
 
         } catch (Exception $e) {
@@ -203,7 +208,7 @@ class ClientController extends Controller
         $client = $this->clientRepo->findById((int)$id);
         $newStatus = ($client['is_blocked'] == 1) ? 0 : 1;
         
-        if ($this->clientRepo->toggleBlock((int)$id, $newStatus)) {
+        if ($this->clientRepo->toggleStatus((int)$id, $newStatus)) {
             $msg = ($newStatus == 1) ? "Compte bloqué (Risque)" : "Compte débloqué";
             Logger::log("CLIENT_BLOCK_TOGGLE", "$msg pour client ID: $id");
             $this->redirect('/clients?success=' . urlencode($msg));
